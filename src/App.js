@@ -1,8 +1,8 @@
 import GlobalStyles from './GlobalStyles';
 import React from "react";
 import { BrowserRouter, Router, Route, Switch, Routes } from 'react-router-dom';
-import DailySchedulerMain from '../Routes/DailySchedulerMain';
 
+import DailySchedulerMain from './Component/DailySchedulerMain';
 
 const App = () => {
   return (
