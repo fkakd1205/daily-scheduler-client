@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
 
@@ -115,7 +115,21 @@ const ViewBox = styled.div`
 
 `;
 
-const CreateDailySchedulerComponent = () => {
+const CreateDailySchedulerComponent = (props) => {
+
+    useEffect(() => {
+        async function getCategory() {
+
+            if(props.dailySchedulerCategory) {
+                return;
+            }
+            
+            props.searchDailySchedulerCategoryControl();
+        }
+
+        getCategory();
+    }, [])
+
     return (
         <Container>
             <form>
@@ -127,10 +141,11 @@ const CreateDailySchedulerComponent = () => {
                     <CreateBox>
                         <ScheduleCategoryBox>
                             {/* TODO :: DB Select */}
-                            <CategoryBtn>Work</CategoryBtn>
-                            <CategoryBtn>Study</CategoryBtn>
-                            <CategoryBtn>Hobby</CategoryBtn>
-                            <CategoryBtn>Anything</CategoryBtn>
+                            {props.dailySchedulerCategory?.map((r, index) => {
+                                return(
+                                    <CategoryBtn key={`scheduler_category_idx` + index}>{r.name}</CategoryBtn>
+                                )
+                            })}
                         </ScheduleCategoryBox>
                         <ScheduleContentBox>
                              <ContentInput type="text"></ContentInput>

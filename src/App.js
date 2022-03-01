@@ -1,8 +1,12 @@
 import GlobalStyles from './GlobalStyles';
 import React from "react";
 import { BrowserRouter, Router, Route, Switch, Routes } from 'react-router-dom';
+import { ThemeProvider } from "@material-ui/core/styles";
+import { unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
 
-import DailySchedulerMain from './Component/DailySchedulerMain';
+import DailySchedulerMain from './component/DailySchedulerMain';
+
+const theme = unstable_createMuiStrictModeTheme();
 
 const App = () => {
   return (
@@ -10,13 +14,15 @@ const App = () => {
       {/* Global Style */}
       <GlobalStyles />
 
-      {/* Router */}
-      <BrowserRouter>
-        <Routes>
-          {/* TODO::Header추가 */}
-          <Route path="/" exact element={<DailySchedulerMain />} />
-        </Routes>
-      </BrowserRouter>
+      <ThemeProvider theme={theme}>
+        {/* Router */}
+        <BrowserRouter>
+          <Routes>
+            {/* TODO::Header추가 */}
+            <Route path="/" exact element={<DailySchedulerMain />} />
+          </Routes>
+        </BrowserRouter>
+      </ThemeProvider>
     </>
   );
 }

@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
-import CreateDailySchedulerComponent from "../Modal/CreateDailySchedulerComponent";
-import DailySchedulerCommonModal from "../Modal/DailySchedulerCommonModal";
 
+import CreateDailySchedulerComponent from "../modal/CreateDailySchedulerComponent";
+import DailySchedulerCommonModal from "../modal/DailySchedulerCommonModal";
 import DailySchedulerBody from "./DailySchedulerBody";
+import { dailySchedulerCategoryDataConnect } from "../data_connect/dailySchedulerCategoryDataConnect"
+
 
 const DATE = new Date();
 const YEAR = DATE.getFullYear();    // 2022
@@ -10,11 +12,15 @@ const MONTH = DATE.getMonth() + 1;
 const TODAY = DATE.getDate();
 
 const DailySchedulerMain = () => {
+    // Date Info
     const [month, setMonth] = useState(MONTH);
     const [year, setYear] = useState(YEAR);
     const [today, setToday] = useState(TODAY);
     const [totalDate, setTotalDate] = useState([]);
+
     const [createDailySchedulerModalOpen, setCreateDailySchedulerModalOpen] = useState(false);
+
+    const [dailySchedulerCategory, setDailySchedulerCategory] = useState(null);
 
     useEffect(() => {
         function fetchInitTotalDate() {
@@ -86,6 +92,27 @@ const DailySchedulerMain = () => {
         }
     }
 
+    const __dataConnectControl = () => {
+        return {
+            searchScheduleCategory: async function () {
+                await dailySchedulerCategoryDataConnect().searchDailySchedulerCategory()
+                    .then(res => {
+                        if(res.status === 200 && res.data.message === "success") {
+                            setDailySchedulerCategory(res.data.data);
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        if(res?.status === 500) {
+                            alert("undefined error.");
+                            return;
+                        }
+                        alert(res?.memo);
+                    })
+            }
+        }
+    }
+
     return (
         <>
             <DailySchedulerBody
@@ -107,7 +134,9 @@ const DailySchedulerMain = () => {
                 fullWidth={true}
             >
                 <CreateDailySchedulerComponent
+                    dailySchedulerCategory={dailySchedulerCategory}
                 
+                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
                 ></CreateDailySchedulerComponent>
             </DailySchedulerCommonModal>
         </>
