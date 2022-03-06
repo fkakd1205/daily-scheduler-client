@@ -4,6 +4,7 @@ import CreateDailySchedulerComponent from "../modal/CreateDailySchedulerComponen
 import DailySchedulerCommonModal from "../modal/DailySchedulerCommonModal";
 import DailySchedulerBody from "./DailySchedulerBody";
 import { dailySchedulerCategoryDataConnect } from "../data_connect/dailySchedulerCategoryDataConnect"
+import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataConnect";
 
 
 const DATE = new Date();
@@ -21,6 +22,7 @@ const DailySchedulerMain = () => {
     const [createDailySchedulerModalOpen, setCreateDailySchedulerModalOpen] = useState(false);
 
     const [dailySchedulerCategory, setDailySchedulerCategory] = useState(null);
+    const [scheduleInfo, setScheduleInfo] = useState(null);
 
     useEffect(() => {
         function fetchInitTotalDate() {
@@ -109,6 +111,38 @@ const DailySchedulerMain = () => {
                         }
                         alert(res?.memo);
                     })
+            },
+            searchSchduleInfo: async function () {
+                await dailySchedulerDataConnect().searchSchduleInfo()
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            setScheduleInfo(res.data.data);
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        if (res?.status === 500) {
+                            alert("undefined error.");
+                            return;
+                        }
+                        alert(res?.memo);
+                    })
+            },
+            createSchdule: async function (data) {
+                await dailySchedulerDataConnect().createScheduleContent(data)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            alert('저장되었습니다.');
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        if (res?.status === 500) {
+                            alert("undefined error.");
+                            return;
+                        }
+                        alert(res?.memo);
+                    })
             }
         }
     }
@@ -135,8 +169,11 @@ const DailySchedulerMain = () => {
             >
                 <CreateDailySchedulerComponent
                     dailySchedulerCategory={dailySchedulerCategory}
+                    scheduleInfo={scheduleInfo}
                 
                     searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
+                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
+                    scheduleContentSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
                 ></CreateDailySchedulerComponent>
             </DailySchedulerCommonModal>
         </>

@@ -135,7 +135,7 @@ const DailySchedulerBody = (props) => {
                                 <DateItem key={'date_item_idx' + index} onClick={(e) => props.schedulerItemControl().open(e)}>
                                     <DateInfoText>{item}</DateInfoText>
                                     <ScheduleContentBox>
-
+                                        
                                     </ScheduleContentBox>
                                 </DateItem>
                         )

@@ -1,7 +1,9 @@
 import styled from 'styled-components';
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useReducer, useState } from "react";
 import CancelIcon from '@mui/icons-material/Cancel';
 import AddIcon from '@mui/icons-material/Add';
+import { dateToYYYYMMDDhhmm } from '../handler/dateHandler';
+import Checkbox from '@mui/material/Checkbox';
 
 const Container = styled.div`
     min-height: 80vh;
@@ -45,16 +47,16 @@ const BodyContainer = styled.div`
 `;
 
 const CreateBox = styled.div`
-    padding: 2%;
+    padding: 1%;
     border-bottom: 1px solid #d7d7d7;
 `;
 
 const ScheduleCategoryBox = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    column-gap: 5%;
+    column-gap: 4%;
     place-items: center;
-    padding: 2%;
+    padding: 1%;
 `;
 
 const CategoryBtn = styled.button`
@@ -74,8 +76,8 @@ const CategoryBtn = styled.button`
 
 const ScheduleContentBox = styled.div`
     display: grid;
-    grid-template-columns: 80% 5%;
-    padding: 5%;
+    grid-template-columns: 90% 10%;
+    padding: 3% 10%;
     place-items: center;
 `;
 
@@ -112,27 +114,127 @@ const ContentAddBtn = styled.button`
 `;
 
 const ViewBox = styled.div`
-
+    padding : 3% 4%;
 `;
 
+const BodyWrapper = styled.div`
+    padding: 2%;
+    background-color: #eee;
+    border-radius: 5px;
+    min-height: 30vh;
+    max-height: 30vh;
+    overflow: auto;
+    font-size: 14px;
+`;
+
+const DataGroup = styled.div`
+    display: grid;
+    grid-template-columns: repeat(6, 8% 7% 50% 15% 15% 5%);
+    column-gap: 5px;
+    padding: 10px 20px;
+    align-items: center;
+    justify-items: center;
+`;
+
+const initialScheduleContentValueState = null;
+
+const scheduleContentValueStateReducer =  (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA': 
+            return action.payload;
+        case 'SET_DATA': 
+            return {
+                ...state,
+                [action.payload.name] : action.payload.value
+            }
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
+
 const CreateDailySchedulerComponent = (props) => {
+    const [scheduleContentValueState, dispatchScheduleContentValueState] = useReducer(scheduleContentValueStateReducer, initialScheduleContentValueState);
+    const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
 
     useEffect(() => {
-        async function getCategory() {
-
+        async function getInitData() {
             if(props.dailySchedulerCategory) {
                 return;
             }
             
-            props.searchDailySchedulerCategoryControl();
+            await props.searchDailySchedulerCategoryControl();
+            await props.searchScheduleInfoControl();
         }
 
-        getCategory();
+        getInitData();
     }, [])
+
+    useEffect(() => {
+        function getCompletedSchedule() {
+            if(!props.scheduleInfo) {
+                return;
+            }
+            
+            let completedIdList = props.scheduleInfo.filter(r => r.completed)[0]?.id;
+            if(completedIdList) {
+                setCompletedScheduleInfoList([completedIdList]);
+            }
+        }
+
+        getCompletedSchedule();
+    }, [props.scheduleInfo])
+
+    const onChangeContentInputValue = (e) => {
+        e.preventDefault();
+
+        dispatchScheduleContentValueState({
+            type: 'SET_DATA',
+            payload: {
+                name : e.target.name,
+                value : e.target.value
+            }
+        });
+    }
+
+    const onClickScheduleCategory = (e, categoryId) => {
+        e.preventDefault();
+
+        dispatchScheduleContentValueState({
+            type: 'SET_DATA',
+            payload: {
+                name : 'categoryId',
+                value : categoryId
+            }
+        });
+    }
+
+    const scheduleSubmit = async (e) => {
+        e.preventDefault();
+
+        await props.scheduleContentSubmitControl(scheduleContentValueState);
+    }
+
+    const convertCategoryName = (categoryId) => {
+        return props.dailySchedulerCategory?.filter(r => r.id === categoryId)[0].name;
+    }
+
+    const scheduleStatusControl = () => {
+        return {
+            isChecked: function (scheduleId) {
+                return completedScheduleInfoList?.includes(scheduleId);
+            },
+            checkOne: function (e, scheduleId) {
+                e.preventDefault();
+
+                setCompletedScheduleInfoList(completedScheduleInfoList.concat(scheduleId));
+            }
+        }
+    }
 
     return (
         <Container>
-            <form>
+            <form onSubmit={(e) => scheduleSubmit(e)}>
                 <HeaderContainer>
                     <HeaderTitle>등록</HeaderTitle>
                     <CloseBtn><CancelIcon fontSize="large"/></CloseBtn>
@@ -140,20 +242,45 @@ const CreateDailySchedulerComponent = (props) => {
                 <BodyContainer>
                     <CreateBox>
                         <ScheduleCategoryBox>
-                            {/* TODO :: DB Select */}
                             {props.dailySchedulerCategory?.map((r, index) => {
-                                return(
-                                    <CategoryBtn key={`scheduler_category_idx` + index}>{r.name}</CategoryBtn>
+                                return (
+                                    <CategoryBtn key={`scheduler_category_idx` + index} onClick={(e) => onClickScheduleCategory(e, r.id)}>{r.name}</CategoryBtn>
                                 )
                             })}
                         </ScheduleCategoryBox>
                         <ScheduleContentBox>
-                             <ContentInput type="text"></ContentInput>
+                             <ContentInput type="text" name="content" onChange={(e) => onChangeContentInputValue(e)} value={scheduleContentValueState?.content || ''} required></ContentInput>
                              <ContentAddBtn type="submit"><AddIcon /></ContentAddBtn>
                         </ScheduleContentBox>
                     </CreateBox>
                     <ViewBox>
-
+                        <BodyWrapper>
+                            <DataGroup>
+                                <div>카테고리</div>
+                                <div>완료여부</div>
+                                <div>스케쥴</div>
+                                <div>등록일</div>
+                                <div>완료일</div>
+                                <div>삭제</div>
+                            </DataGroup>
+                            {props.scheduleInfo?.map((r, index) => {
+                                return (
+                                    <DataGroup key={`scheduler_info_idx` + index}>
+                                        <div>{convertCategoryName(r.categoryId)}</div>
+                                        <div>
+                                            <Checkbox
+                                                onClick={(e) => scheduleStatusControl().checkOne(e, r.id)}
+                                                checked={scheduleStatusControl().isChecked(r.id)}
+                                            />
+                                        </div>
+                                        <div>{r.content}</div>
+                                        <div>{dateToYYYYMMDDhhmm(r.createdAt)}</div>
+                                        <div>{r.completedAt ? dateToYYYYMMDDhhmm(r.completedAt) : ''}</div>
+                                        <div>X</div>
+                                    </DataGroup>
+                                )
+                            })}
+                        </BodyWrapper>
                     </ViewBox>
                 </BodyContainer>
             </form>
