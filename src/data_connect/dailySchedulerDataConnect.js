@@ -16,6 +16,19 @@ const dailySchedulerDataConnect = () => {
                 // withCredentials: true
             });
         },
+        deleteScheduleData: async function (scheduleId) {
+            return await axios.delete(`${API_SERVER_ADDRESS}/api/v1/schedules/${scheduleId}`, {
+
+            });
+        },
+        changeScheduleData: async function (data) {
+            return await axios.patch(`${API_SERVER_ADDRESS}/api/v1/schedules`, data, {
+            });
+        },
+        updateScheduleData: async function (data) {
+            return await axios.put(`${API_SERVER_ADDRESS}/api/v1/schedules`, data, {
+            });
+        }
     }
 }
 

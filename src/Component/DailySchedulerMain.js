@@ -133,6 +133,57 @@ const DailySchedulerMain = () => {
                     .then(res => {
                         if (res.status === 200 && res.data.message === "success") {
                             alert('저장되었습니다.');
+                            __dataConnectControl().searchSchduleInfo();
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        if (res?.status === 500) {
+                            alert("undefined error.");
+                            return;
+                        }
+                        alert(res?.memo);
+                    })
+            },
+            deleteSchedule: async function (scheduleId) {
+                await dailySchedulerDataConnect().deleteScheduleData(scheduleId)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            alert('삭제되었습니다.');
+                            __dataConnectControl().searchSchduleInfo();
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        if (res?.status === 500) {
+                            alert("undefined error.");
+                            return;
+                        }
+                        alert(res?.memo);
+                    })
+            },
+            changeScheduleData: async function (data) {
+                await dailySchedulerDataConnect().changeScheduleData(data)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            __dataConnectControl().searchSchduleInfo();
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        if (res?.status === 500) {
+                            alert("undefined error.");
+                            return;
+                        }
+                        alert(res?.memo);
+                    })
+            },
+            updateScheduleData: async function (data) {
+                await dailySchedulerDataConnect().updateScheduleData(data)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            alert('완료되었습니다.');
+                            __dataConnectControl().searchSchduleInfo();
                         }
                     })
                     .catch(err => {
@@ -171,9 +222,13 @@ const DailySchedulerMain = () => {
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
                 
+                    onClose={() => onCreateDailySchedulerModalClose()}
                     searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
                     searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
-                    scheduleContentSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
+                    scheduleInfoSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
+                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
+                    changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
+                    updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
                 ></CreateDailySchedulerComponent>
             </DailySchedulerCommonModal>
         </>
