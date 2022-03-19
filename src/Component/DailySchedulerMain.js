@@ -22,6 +22,7 @@ const selectedDateReducer = (state, action) => {
         case 'SET_DATA':
             return {
                 ...state,
+                date: action.payload.date,
                 startDate: action.payload.startDate,
                 endDate: action.payload.endDate
             }
@@ -125,6 +126,7 @@ const DailySchedulerMain = () => {
             open: function (e, item) {
                 e.preventDefault();
 
+                // 클릭한 날짜
                 let date = new Date(year, month-1, item);
                 let startDate = getStartDate(date);
                 let endDate = getEndDate(date);
@@ -132,6 +134,7 @@ const DailySchedulerMain = () => {
                 dispatchSelectedDateState({
                     type: 'SET_DATA',
                     payload: {
+                        date: item,
                         startDate: startDate,
                         endDate: endDate
                     }
@@ -270,6 +273,10 @@ const DailySchedulerMain = () => {
                 <CreateDailySchedulerComponent
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
+                    selectedDateState={selectedDateState}
+                    todayDate={todayDate}
+                    month={month}
+                    year={year}  
                 
                     onClose={() => onCreateDailySchedulerModalClose()}
                     searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}

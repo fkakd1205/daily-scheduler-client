@@ -7,8 +7,6 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 const Container = styled.div`
-    min-height: 80vh;
-    max-height: 80vh;
 `;
 
 const HeaderContainer = styled.div`
@@ -94,7 +92,12 @@ const ContentInput = styled.input`
     border-bottom: 0.5px solid #000;
     height: 3vw;
     font-size: 1rem;
-    padding: 10px;
+    padding: 7px;
+    transition: 0.3s;
+
+    &:focus {
+        outline: none;
+    }
 `;
 
 const ContentAddBtn = styled.button`
@@ -125,8 +128,8 @@ const BodyWrapper = styled.div`
     /* padding: 2%; */
     background-color: #eeeeeeb3;
     border-radius: 5px;
-    min-height: 35vh;
-    max-height: 35vh;
+    min-height: 50vh;
+    max-height: 50vh;
     overflow: auto;
     font-size: 14px;
 
@@ -161,10 +164,23 @@ const DeleteBtn = styled.div`
 const DataText = styled.div`
 `;
 
+const DataTextInput = styled.input`
+    border: 1px solid transparent;
+    background-color: transparent;
+    width: 80%;
+    padding: 5px;
+    transition: 0.2s;
+    
+    &:focus{
+        outline: none;
+        border-bottom: 1px solid #000;
+    }
+`;
+
 const EditControl = styled.button`
     padding: 1% 4%;
     float: right;
-    margin: 10px;
+    margin: 5px;
     border: none;
     background-color: #bdc7e7;
     font-size: 1rem;
@@ -194,9 +210,8 @@ const scheduleEditValueStateReducer =  (state, action) => {
     switch (action.type) {
         case 'INIT_DATA': 
             return action.payload;
-        // TODO :: SET_DATA 설정하기
         case 'SET_DATA': 
-            return state;
+            return action.payload;
         case 'CLEAR':
             return null;
         default: return { ...state }
@@ -230,7 +245,7 @@ const CreateDailySchedulerComponent = (props) => {
             });
         }
         initSchedule();
-    }, [props.scheduleInfo])
+    }, [props.scheduleInfo]);
 
     useEffect(() => {
         function getCompletedSchedule() {
@@ -272,7 +287,12 @@ const CreateDailySchedulerComponent = (props) => {
             alert('카테고리를 선택해주세요.')
             return;
         }
+
         await props.scheduleInfoSubmitControl(scheduleInfoValueState);
+
+        dispatchScheduleInfoValueState({
+            type: 'CLEAR'
+        });
     }
 
     const convertCategoryName = (categoryId) => {
@@ -332,6 +352,29 @@ const CreateDailySchedulerComponent = (props) => {
         }
     }
 
+    const scheduleEditControl = () => {
+        return {
+            onChangeInputValue: function(e, scheduleId) {
+
+                let newData = scheduleEditValueState?.map(r => {
+                    if(r.id === scheduleId){
+                        r = {
+                            ...r,
+                            [e.target.name] : e.target.value
+                        }
+                    }
+                    
+                    return r;
+                });
+
+                dispatchScheduleEditValueState({
+                    type : 'SET_DATA',
+                    payload: newData
+                });
+            }
+        }
+    }
+
     const scheduleContentDelete = async (e, sheduleId) => {
         e.preventDefault();
 
@@ -350,9 +393,9 @@ const CreateDailySchedulerComponent = (props) => {
             <form onSubmit={(e) => scheduleSubmit(e)}>
                 <HeaderContainer>
                     <HeaderTitle>등록</HeaderTitle>
-                    <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large"/></CloseBtn>
+                    <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
                 </HeaderContainer>
-                <BodyContainer>
+                {(props.selectedDateState?.date === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear()) &&
                     <CreateBox>
                         <ScheduleCategoryBox>
                             {props.dailySchedulerCategory?.map((r, index) => {
@@ -362,47 +405,51 @@ const CreateDailySchedulerComponent = (props) => {
                             })}
                         </ScheduleCategoryBox>
                         <ScheduleContentBox>
-                             <ContentInput type="text" name="content" onChange={(e) => onChangeScheduleInfoValue(e)} value={scheduleInfoValueState?.content || ''} required></ContentInput>
-                             <ContentAddBtn type="submit"><AddCircleIcon fontSize="large"/></ContentAddBtn>
+                            <ContentInput type="text" name="content" onChange={(e) => onChangeScheduleInfoValue(e)} value={scheduleInfoValueState?.content || ''} required></ContentInput>
+                            <ContentAddBtn type="submit"><AddCircleIcon fontSize="large" /></ContentAddBtn>
                         </ScheduleContentBox>
                     </CreateBox>
-                    <ViewBox>
-                        <BodyWrapper>
-                            <DataGroup className="fixed-header">
-                                <DataText>카테고리</DataText>
-                                <DataText>완료여부</DataText>
-                                <DataText>스케쥴</DataText>
-                                <DataText>등록일</DataText>
-                                <DataText>완료일</DataText>
-                                <DataText>삭제</DataText>
-                            </DataGroup>
-                            {scheduleEditValueState?.map((r, index) => {
-                                return (
-                                    <DataGroup key={`scheduler_info_idx` + index}>
-                                        <DataText name="categoryId">{convertCategoryName(r.categoryId)}</DataText>
-                                        <DataText name="completed">
-                                            <Checkbox
-                                                onClick={scheduleStatusControl().isCompleted(r.id) ? 
-                                                    () => scheduleStatusControl().cancelOne(r.id) 
-                                                    :
-                                                    (e) => scheduleStatusControl().checkOne(e, r.id)}
-                                                checked={scheduleStatusControl().isChecked(r.id)}
-                                            />
-                                        </DataText>
-                                        <DataText name="content">{r.content}</DataText>
-                                        <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
-                                        <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
-                                        <DeleteBtn onClick={(e) => scheduleContentDelete(e, r.id)}><DeleteForeverIcon /></DeleteBtn>
-                                    </DataGroup>
-                                )
-                            })}
-                        </BodyWrapper>
-                        <EditControl onClick={(e) => updateSchedule(e)}>
-                            <span>수정 완료</span>
-                        </EditControl>
-                    </ViewBox>
-                </BodyContainer>
+                }
             </form>
+            <BodyContainer>
+            <form onSubmit={(e) => updateSchedule(e)}>
+                <ViewBox>
+                    <BodyWrapper>
+                        <DataGroup className="fixed-header">
+                            <DataText>카테고리</DataText>
+                            <DataText>완료여부</DataText>
+                            <DataText>스케쥴</DataText>
+                            <DataText>등록일</DataText>
+                            <DataText>완료일</DataText>
+                            <DataText>삭제</DataText>
+                        </DataGroup>
+                        {scheduleEditValueState?.map((r, index) => {
+                            return (
+                                <DataGroup key={`scheduler_info_idx` + index}>
+                                    <DataText name="categoryId">{convertCategoryName(r.categoryId)}</DataText>
+                                    <DataText>
+                                        <Checkbox
+                                            onClick={scheduleStatusControl().isCompleted(r.id) ?
+                                                () => scheduleStatusControl().cancelOne(r.id)
+                                                :
+                                                (e) => scheduleStatusControl().checkOne(e, r.id)}
+                                            checked={scheduleStatusControl().isChecked(r.id)}
+                                        />
+                                    </DataText>
+                                    <DataTextInput name="content" value={r.content || ''} onChange={(e) => scheduleEditControl().onChangeInputValue(e, r.id)}></DataTextInput>
+                                    <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
+                                    <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
+                                    <DeleteBtn onClick={(e) => scheduleContentDelete(e, r.id)}><DeleteForeverIcon /></DeleteBtn>
+                                </DataGroup>
+                            )
+                        })}
+                    </BodyWrapper>
+                    <EditControl type="submit">
+                        <span>완료</span>
+                    </EditControl>
+                </ViewBox>
+                </form>
+            </BodyContainer>
         </Container>
     )
 }
