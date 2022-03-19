@@ -185,11 +185,20 @@ const EditControl = styled.button`
     background-color: #bdc7e7;
     font-size: 1rem;
     font-weight: 500;
+`;
 
+const CategorySelect = styled.select`
+    border: none;
+    background-color: transparent;
+
+    &:focus {
+        outline: none;
+    }
 `;
 
 const initialScheduleInfoValueState = null;
 const initialScheduleEditValueState = null;
+const initialScheduleSortingInfo = null;
 
 const scheduleInfoValueStateReducer =  (state, action) => {
     switch (action.type) {
@@ -206,7 +215,7 @@ const scheduleInfoValueStateReducer =  (state, action) => {
     }
 }
 
-const scheduleEditValueStateReducer =  (state, action) => {
+const scheduleEditValueStateReducer = (state, action) => {
     switch (action.type) {
         case 'INIT_DATA': 
             return action.payload;
@@ -218,9 +227,31 @@ const scheduleEditValueStateReducer =  (state, action) => {
     }
 }
 
+const scheduleSortingInfoReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA':
+            return {
+                ...state,
+                categoryId: 'total',
+                completed: 'total'
+            }
+        case 'SET_DATA':
+            return {
+                ...state,
+                categoryId: action.payload.categoryId ?? state.categoryId,
+                completed: action.payload.completed ?? state.completed
+            }
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
+
 const CreateDailySchedulerComponent = (props) => {
     const [scheduleInfoValueState, dispatchScheduleInfoValueState] = useReducer(scheduleInfoValueStateReducer, initialScheduleInfoValueState);
     const [scheduleEditValueState, dispatchScheduleEditValueState] = useReducer(scheduleEditValueStateReducer, initialScheduleEditValueState);
+    const [scheduleSortingInfoState, dispatchScheduleSortingInfoState] = useReducer(scheduleSortingInfoReducer, initialScheduleSortingInfo);
+
     const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
     const [checkedScheduleInfoList, setCheckedScheduleInfoList] = useState([]);
 
@@ -228,6 +259,11 @@ const CreateDailySchedulerComponent = (props) => {
         async function getInitData() {
             await props.searchDailySchedulerCategoryControl();
             await props.searchScheduleInfoControl();
+
+            // 기본 카테고리 select 선택
+            dispatchScheduleSortingInfoState({
+                type: 'INIT_DATA'
+            });
         }
 
         getInitData();
@@ -262,6 +298,18 @@ const CreateDailySchedulerComponent = (props) => {
 
         getCompletedSchedule();
     }, [props.scheduleInfo]);
+
+    // 선택된 카테고리로 스케쥴 조회
+    useEffect(() => {
+        function changeSort() {
+            if(!(scheduleSortingInfoState && props.scheduleInfo)) {
+                return;
+            }
+
+            viewSelectControl().changeViewData();
+        }
+        changeSort();
+    }, [scheduleSortingInfoState, props.scheduleInfo])
 
     const onCloseModal = (e) => {
         e.preventDefault();
@@ -375,6 +423,33 @@ const CreateDailySchedulerComponent = (props) => {
         }
     }
 
+    const viewSelectControl = () => {
+        return {
+            onChangeCategoryValue: function (e) {
+                let target = e.target.value;
+
+                dispatchScheduleSortingInfoState({
+                    type: 'SET_DATA',
+                    payload: {
+                        categoryId: target
+                    }
+                });
+            },
+            changeViewData: function () {
+                let newData = props.scheduleInfo;
+
+                if(scheduleSortingInfoState?.categoryId !== 'total') {
+                    newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
+                }
+
+                dispatchScheduleEditValueState({
+                    type: 'INIT_DATA',
+                    payload: newData
+                });
+            }
+        }
+    }
+
     const scheduleContentDelete = async (e, sheduleId) => {
         e.preventDefault();
 
@@ -395,59 +470,69 @@ const CreateDailySchedulerComponent = (props) => {
                     <HeaderTitle>등록</HeaderTitle>
                     <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
                 </HeaderContainer>
-                {(props.selectedDateState?.date === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear()) &&
-                    <CreateBox>
-                        <ScheduleCategoryBox>
-                            {props.dailySchedulerCategory?.map((r, index) => {
+                <BodyContainer>
+                    {(props.selectedDateState?.date === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear()) &&
+                        <CreateBox>
+                            <ScheduleCategoryBox>
+                                {props.dailySchedulerCategory?.map((r, index) => {
+                                    return (
+                                        <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={scheduleInfoValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => onChangeScheduleInfoValue(e)} value={r.id}>{r.name}</CategoryBtn>
+                                    )
+                                })}
+                            </ScheduleCategoryBox>
+                            <ScheduleContentBox>
+                                <ContentInput type="text" name="content" onChange={(e) => onChangeScheduleInfoValue(e)} value={scheduleInfoValueState?.content || ''} required></ContentInput>
+                                <ContentAddBtn type="submit"><AddCircleIcon fontSize="large" /></ContentAddBtn>
+                            </ScheduleContentBox>
+                        </CreateBox>
+                    }
+                </BodyContainer>
+            </form>
+
+            <BodyContainer>
+                <form onSubmit={(e) => updateSchedule(e)}>
+                    <ViewBox>
+                        <BodyWrapper>
+                            <DataGroup className="fixed-header">
+                                <CategorySelect onChange={(e) => viewSelectControl().onChangeCategoryValue(e)} value={scheduleSortingInfoState?.categoryId}>
+                                    <option value='total'>카테고리</option>
+                                    {props.dailySchedulerCategory?.map((r, index) => {
+                                        return (
+                                            <option key={`view_category_idx` + index} value={r.id}>{r.name}</option>
+                                        )
+                                    })}
+                                </CategorySelect>
+                                <DataText>완료여부</DataText>
+                                <DataText>스케쥴</DataText>
+                                <DataText>등록일</DataText>
+                                <DataText>완료일</DataText>
+                                <DataText>삭제</DataText>
+                            </DataGroup>
+                            {scheduleEditValueState?.map((r, index) => {
                                 return (
-                                    <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={scheduleInfoValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => onChangeScheduleInfoValue(e)} value={r.id}>{r.name}</CategoryBtn>
+                                    <DataGroup key={`scheduler_info_idx` + index}>
+                                        <DataText name="categoryId">{convertCategoryName(r.categoryId)}</DataText>
+                                        <DataText>
+                                            <Checkbox
+                                                onClick={scheduleStatusControl().isCompleted(r.id) ?
+                                                    () => scheduleStatusControl().cancelOne(r.id)
+                                                    :
+                                                    (e) => scheduleStatusControl().checkOne(e, r.id)}
+                                                checked={scheduleStatusControl().isChecked(r.id)}
+                                            />
+                                        </DataText>
+                                        <DataTextInput name="content" value={r.content || ''} onChange={(e) => scheduleEditControl().onChangeInputValue(e, r.id)}></DataTextInput>
+                                        <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
+                                        <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
+                                        <DeleteBtn onClick={(e) => scheduleContentDelete(e, r.id)}><DeleteForeverIcon /></DeleteBtn>
+                                    </DataGroup>
                                 )
                             })}
-                        </ScheduleCategoryBox>
-                        <ScheduleContentBox>
-                            <ContentInput type="text" name="content" onChange={(e) => onChangeScheduleInfoValue(e)} value={scheduleInfoValueState?.content || ''} required></ContentInput>
-                            <ContentAddBtn type="submit"><AddCircleIcon fontSize="large" /></ContentAddBtn>
-                        </ScheduleContentBox>
-                    </CreateBox>
-                }
-            </form>
-            <BodyContainer>
-            <form onSubmit={(e) => updateSchedule(e)}>
-                <ViewBox>
-                    <BodyWrapper>
-                        <DataGroup className="fixed-header">
-                            <DataText>카테고리</DataText>
-                            <DataText>완료여부</DataText>
-                            <DataText>스케쥴</DataText>
-                            <DataText>등록일</DataText>
-                            <DataText>완료일</DataText>
-                            <DataText>삭제</DataText>
-                        </DataGroup>
-                        {scheduleEditValueState?.map((r, index) => {
-                            return (
-                                <DataGroup key={`scheduler_info_idx` + index}>
-                                    <DataText name="categoryId">{convertCategoryName(r.categoryId)}</DataText>
-                                    <DataText>
-                                        <Checkbox
-                                            onClick={scheduleStatusControl().isCompleted(r.id) ?
-                                                () => scheduleStatusControl().cancelOne(r.id)
-                                                :
-                                                (e) => scheduleStatusControl().checkOne(e, r.id)}
-                                            checked={scheduleStatusControl().isChecked(r.id)}
-                                        />
-                                    </DataText>
-                                    <DataTextInput name="content" value={r.content || ''} onChange={(e) => scheduleEditControl().onChangeInputValue(e, r.id)}></DataTextInput>
-                                    <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
-                                    <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
-                                    <DeleteBtn onClick={(e) => scheduleContentDelete(e, r.id)}><DeleteForeverIcon /></DeleteBtn>
-                                </DataGroup>
-                            )
-                        })}
-                    </BodyWrapper>
-                    <EditControl type="submit">
-                        <span>완료</span>
-                    </EditControl>
-                </ViewBox>
+                        </BodyWrapper>
+                        <EditControl type="submit">
+                            <span>완료</span>
+                        </EditControl>
+                    </ViewBox>
                 </form>
             </BodyContainer>
         </Container>

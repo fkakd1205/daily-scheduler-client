@@ -4,7 +4,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const Container = styled.div`
-    padding-bottom: 5%;
+    /* padding-bottom: 5%; */
 `;
 
 const CalendarHead = styled.div`
@@ -142,7 +142,7 @@ const DailySchedulerBody = (props) => {
                                 <DateItem key={'date_item_idx' + index} className={(item === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear())? 'today' : ''} onClick={(e) => props.schedulerItemControl().open(e, item)} >
                                     <DateInfoText>{item}</DateInfoText>
                                     <ScheduleContentBox>
-                                        
+
                                     </ScheduleContentBox>
                                 </DateItem>
                         )
