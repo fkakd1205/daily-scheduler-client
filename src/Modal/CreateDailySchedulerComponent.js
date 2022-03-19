@@ -30,6 +30,7 @@ const CloseBtn = styled.button`
     border:none;
     padding: 1.2% 3%;
     transition: 0.4s;
+    color: #595959;
 
     &:hover{
         transform: scale(1.1);
@@ -102,7 +103,7 @@ const ContentAddBtn = styled.button`
     border: none;
     transition: 0.4s;
     align-content: center;
-    color: #abcdef;
+    color: #595959;
 
     &:hover{
         transform: scale(1.1);
@@ -147,6 +148,8 @@ const DataGroup = styled.div`
 `;
 
 const DeleteBtn = styled.div`
+    color: #595959;
+
     &:hover{
         cursor: pointer;
         transition: 0.1s;

@@ -1,9 +1,10 @@
-import styled from 'styled-components';
+import styled, {css} from 'styled-components';
 import React, { useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const Container = styled.div`
+    padding-bottom: 5%;
 `;
 
 const CalendarHead = styled.div`
@@ -73,6 +74,11 @@ const DateItem = styled.div`
     min-height: 10vh;
     max-height: 10vh;
 
+    &.today {
+        font-weight: 700;
+        background-color: #b0e0ff;
+    }
+
     &:hover{
         background-color: #8fd3ff;
         font-weight: 700;
@@ -114,6 +120,7 @@ const DailySchedulerBody = (props) => {
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
                 </MonthControlBox>
             </CalendarHead>
+
             <CalendarBody>
                 <DayInfo>
                     {WEEKDAY.map((day, index) => {
@@ -123,23 +130,22 @@ const DailySchedulerBody = (props) => {
                     })}
                 </DayInfo>
                 <DateBody>
-                    {props.totalDate?.map((item, index) => {
-                        return (
-                            (index < props.prevMonthLastDate || index >= props.nextMonthStartDate) ?
-                                <OtherMonthItem key={'date_item_idx' + index}>
-                                    <DateInfoText>{item}</DateInfoText>
-                                    <ScheduleContentBox>
-                                    </ScheduleContentBox>
-                                </OtherMonthItem>
-                                :
-                                <DateItem key={'date_item_idx' + index} onClick={(e) => props.schedulerItemControl().open(e)}>
-                                    <DateInfoText>{item}</DateInfoText>
-                                    <ScheduleContentBox>
-                                        
-                                    </ScheduleContentBox>
-                                </DateItem>
-                        )
-                    })}
+                        {props.totalDate?.map((item, index) => {
+                            return (
+                                (index < props.prevMonthLastDate || index >= props.nextMonthStartDate) ?
+                                    <OtherMonthItem key={'date_item_idx' + index}>
+                                        <DateInfoText>{item}</DateInfoText>
+                                        <ScheduleContentBox>
+                                        </ScheduleContentBox>
+                                    </OtherMonthItem>
+                                    :
+                                    <DateItem key={'date_item_idx' + index} className={(item === props.todayDate.getDate()) && (props.month === props.todayDate.getMonth()+1) ? 'today' : '' } onClick={(e) => props.schedulerItemControl().open(e, item)} >
+                                        <DateInfoText>{item}</DateInfoText>
+                                        <ScheduleContentBox>
+                                        </ScheduleContentBox>
+                                    </DateItem>
+                            )
+                        })}
                 </DateBody>
             </CalendarBody>
         </Container>

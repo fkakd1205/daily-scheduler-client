@@ -1,32 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useReducer } from "react";
 
 import CreateDailySchedulerComponent from "../modal/CreateDailySchedulerComponent";
 import DailySchedulerCommonModal from "../modal/DailySchedulerCommonModal";
 import DailySchedulerBody from "./DailySchedulerBody";
 import { dailySchedulerCategoryDataConnect } from "../data_connect/dailySchedulerCategoryDataConnect"
 import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataConnect";
+import { getStartDate, getEndDate } from "../handler/dateHandler"
 
 
-const DATE = new Date();
-const YEAR = DATE.getFullYear();    // 2022
-const MONTH = DATE.getMonth() + 1;
-const TODAY = DATE.getDate();
+const TODAY = new Date();
+const YEAR = TODAY.getFullYear();    // 2022
+const MONTH = TODAY.getMonth() + 1;
+const DATE = TODAY.getDate();
+
+const initialSelectedDateState = null;
+
+const selectedDateReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA':
+            return action.payload;
+        case 'SET_DATA':
+            return {
+                ...state,
+                startDate: action.payload.startDate,
+                endDate: action.payload.endDate
+            }
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
 
 const DailySchedulerMain = () => {
     // Date Info
-    const [month, setMonth] = useState(MONTH);
     const [year, setYear] = useState(YEAR);
-    const [today, setToday] = useState(TODAY);
+    const [month, setMonth] = useState(MONTH);
+    const [date, setDate] = useState(DATE);
     const [totalDate, setTotalDate] = useState([]);
+    const [todayDate, setTodayDate] = useState(TODAY);
 
     const [createDailySchedulerModalOpen, setCreateDailySchedulerModalOpen] = useState(false);
 
     const [dailySchedulerCategory, setDailySchedulerCategory] = useState(null);
     const [scheduleInfo, setScheduleInfo] = useState(null);
 
+    const [selectedDateState, dispatchSelectedDateState] = useReducer(selectedDateReducer, initialSelectedDateState)
+
     useEffect(() => {
         function fetchInitTotalDate() {
-            setTotalDate(changeSchedulerDate(month))
+            setTotalDate(changeSchedulerDate(month));
         }
 
         fetchInitTotalDate();
@@ -74,20 +96,46 @@ const DailySchedulerMain = () => {
             moveAndGetPrevMonth: function (e) {
                 e.preventDefault();
 
-                setMonth(month-1);
+                let prevMonth = month - 1;
+
+                if(prevMonth < 1) {
+                    setYear(year - 1);
+                    setMonth(12);
+                }else {
+                    setMonth(prevMonth);
+                }
             },
             moveAndGetNextMonth: function(e) {
                 e.preventDefault();
 
-                setMonth(month+1);
+                let nextMonth = month + 1;
+
+                if(nextMonth > 12) {
+                    setYear(year + 1);
+                    setMonth(1);
+                }else {
+                    setMonth(nextMonth);
+                }
             }
         }
     }
 
     const schedulerItem = () => {
         return {
-            open: function (e) {
+            open: function (e, item) {
                 e.preventDefault();
+
+                let date = new Date(year, month-1, item);
+                let startDate = getStartDate(date);
+                let endDate = getEndDate(date);
+
+                dispatchSelectedDateState({
+                    type: 'SET_DATA',
+                    payload: {
+                        startDate: startDate,
+                        endDate: endDate
+                    }
+                });
 
                 onCreateDailySchedulerModalOpen(true);
             }
@@ -113,7 +161,7 @@ const DailySchedulerMain = () => {
                     })
             },
             searchSchduleInfo: async function () {
-                await dailySchedulerDataConnect().searchSchduleInfo()
+                await dailySchedulerDataConnect().searchSchduleInfoByDate(selectedDateState?.startDate, selectedDateState?.endDate)
                     .then(res => {
                         if (res.status === 200 && res.data.message === "success") {
                             setScheduleInfo(res.data.data);
@@ -203,8 +251,9 @@ const DailySchedulerMain = () => {
             <DailySchedulerBody
                 month={month}
                 year={year}
-                today={today}
+                date={date}
                 totalDate={totalDate}
+                todayDate={todayDate}
                 prevMonthLastDate={totalDate.indexOf(1)}
                 nextMonthStartDate={totalDate.indexOf(1, 7) === -1 ? totalDate.length : totalDate.indexOf(1, 7)}
                 
