@@ -234,7 +234,7 @@ const SearchMonthlySchedulerComponent = (props) => {
                 dispatchScheduleSortingInfoState({
                     type: 'SET_DATA',
                     payload: {
-                        completed: JSON.parse(target)
+                        completed: target
                     }
                 });
             },
@@ -246,7 +246,7 @@ const SearchMonthlySchedulerComponent = (props) => {
                 }
 
                 if(scheduleSortingInfoState?.completed !== 'total') {
-                    newData = newData?.filter(r => scheduleSortingInfoState.completed ? r.completedAt : !r.completedAt);
+                    newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
                 }
 
                 dispatchScheduleValueState({

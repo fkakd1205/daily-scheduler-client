@@ -443,7 +443,7 @@ const CreateDailySchedulerComponent = (props) => {
                 dispatchScheduleSortingInfoState({
                     type: 'SET_DATA',
                     payload: {
-                        completed: JSON.parse(target)
+                        completed: target
                     }
                 });
             },
@@ -455,7 +455,7 @@ const CreateDailySchedulerComponent = (props) => {
                 }
 
                 if(scheduleSortingInfoState?.completed !== 'total') {
-                    newData = newData?.filter(r => scheduleSortingInfoState.completed ? r.completedAt : !r.completedAt);
+                    newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
                 }
 
                 dispatchScheduleEditValueState({
@@ -483,7 +483,7 @@ const CreateDailySchedulerComponent = (props) => {
         <Container>
             <form onSubmit={(e) => scheduleSubmit(e)}>
                 <HeaderContainer>
-                    <HeaderTitle>등록</HeaderTitle>
+                    <HeaderTitle>등록 및 조회</HeaderTitle>
                     <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
                 </HeaderContainer>
                 <BodyContainer>
