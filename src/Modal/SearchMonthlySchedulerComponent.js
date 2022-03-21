@@ -139,7 +139,7 @@ const SearchMonthlySchedulerComponent = (props) => {
     const [scheduleValueState, dispatchScheduleValueState] = useReducer(scheduleValueStateReducer, initialScheduleValueState);
     const [scheduleSortingInfoState, dispatchScheduleSortingInfoState] = useReducer(scheduleSortingInfoReducer, initialScheduleSortingInfo);
     const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
-    const [progressionRate, setProgressionRate] = useState(null);
+    const [progressionRate, setProgressionRate] = useState(0);
 
     useEffect(() => {
         async function getInitData() {
@@ -181,7 +181,10 @@ const SearchMonthlySchedulerComponent = (props) => {
             }
 
             // 진행률
-            let rate = Math.round((completedIdList.length / props.scheduleInfo.length) * 100);
+            let rate = 0;
+            if(props.scheduleInfo.length !== 0){
+                rate = Math.round((completedIdList.length / props.scheduleInfo.length) * 100);
+            }
             setProgressionRate(rate);
         }
 
@@ -265,7 +268,7 @@ const SearchMonthlySchedulerComponent = (props) => {
                 <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
             </HeaderContainer>
             <ProgressBox>
-                <span>{progressionRate}%</span>
+                <span>{progressionRate ?? 0}%</span>
                 <LinearProgress className={classes.progressBar} variant="determinate" value={progressionRate} />
             </ProgressBox>
             <BodyWrapper>

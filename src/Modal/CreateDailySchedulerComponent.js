@@ -125,7 +125,7 @@ const ViewBox = styled.div`
 `;
 
 const BodyWrapper = styled.div`
-    /* padding: 2%; */
+    padding-bottom: 5%;
     background-color: #eeeeeeb3;
     border-radius: 5px;
     min-height: 50vh;
@@ -138,16 +138,18 @@ const BodyWrapper = styled.div`
         top: -1px;
         background: #d5dae9;
         z-index:10;
+        border-bottom: none;
     }
 `;
 
-const DataGroup = styled.div`
+const DataGroupLi = styled.div`
     display: grid;
     grid-template-columns: repeat(6, 10% 10% 50% 10% 10% 10%);
     column-gap: 5px;
     padding: 10px 20px;
     align-items: center;
     justify-items: center;
+    border-bottom: 2px solid #d5dae94f;
 `;
 
 const DeleteBtn = styled.div`
@@ -507,7 +509,7 @@ const CreateDailySchedulerComponent = (props) => {
                 <form onSubmit={(e) => updateSchedule(e)}>
                     <ViewBox>
                         <BodyWrapper>
-                            <DataGroup className="fixed-header">
+                            <DataGroupLi className="fixed-header">
                                 <CategorySelect onChange={(e) => viewSelectControl().onChangeCategoryValue(e)} value={scheduleSortingInfoState?.categoryId}>
                                     <option value='total'>카테고리</option>
                                     {props.dailySchedulerCategory?.map((r, index) => {
@@ -525,10 +527,10 @@ const CreateDailySchedulerComponent = (props) => {
                                 <DataText>등록일</DataText>
                                 <DataText>완료일</DataText>
                                 <DataText>삭제</DataText>
-                            </DataGroup>
+                            </DataGroupLi>
                             {scheduleEditValueState?.map((r, index) => {
                                 return (
-                                    <DataGroup key={`scheduler_info_idx` + index}>
+                                    <DataGroupLi key={`scheduler_info_idx` + index}>
                                         <DataText name="categoryId">{convertCategoryName(r.categoryId)}</DataText>
                                         <DataText>
                                             <Checkbox
@@ -543,7 +545,7 @@ const CreateDailySchedulerComponent = (props) => {
                                         <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
                                         <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
                                         <DeleteBtn onClick={(e) => scheduleContentDelete(e, r.id)}><DeleteForeverIcon /></DeleteBtn>
-                                    </DataGroup>
+                                    </DataGroupLi>
                                 )
                             })}
                         </BodyWrapper>
