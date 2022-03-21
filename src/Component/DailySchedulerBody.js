@@ -4,7 +4,7 @@ import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const Container = styled.div`
-    /* padding-bottom: 5%; */
+    padding-bottom: 5%;
 `;
 
 const CalendarHead = styled.div`
@@ -15,8 +15,12 @@ const CalendarHead = styled.div`
     font-weight: 600;
     font-size: 1.4rem;
     padding: 5px;
-    height: 8vw;
+    height: 4vw;
     align-items: center;
+`;
+
+const CalendarFooter = styled.div`
+    padding: 10px;
 `;
 
 const MonthControlBox = styled.div`
@@ -77,6 +81,8 @@ const DateItem = styled.div`
     &.today {
         font-weight: 700;
         background-color: #b0e0ff;
+        box-shadow: 2px 2px 15px #b0e0ff;
+
     }
 
     &:hover{
@@ -105,6 +111,22 @@ const DateInfoText = styled.span`
 const ScheduleContentBox = styled.div`
     min-height: 55px;
     max-height: 55px;
+`;
+
+const MonthlyBtn = styled.button`
+    background-color: #39b1ff;
+    border: 1px solid transparent;
+    padding: 10px 30px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    float: right;
+    border-radius: 5px;
+    color: white;
+
+    &:hover {
+        cursor: pointer;
+    }
+
 `;
 
 const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
@@ -139,7 +161,9 @@ const DailySchedulerBody = (props) => {
                                     </ScheduleContentBox>
                                 </OtherMonthItem>
                                 :
-                                <DateItem key={'date_item_idx' + index} className={(item === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear())? 'today' : ''} onClick={(e) => props.schedulerItemControl().open(e, item)} >
+                                <DateItem key={'date_item_idx' + index}
+                                    className={(item === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear()) ? 'today' : ''}
+                                    onClick={(e) => props.schedulerItemControl().open(e, item)} >
                                     <DateInfoText>{item}</DateInfoText>
                                     <ScheduleContentBox>
 
@@ -149,6 +173,12 @@ const DailySchedulerBody = (props) => {
                     })}
                 </DateBody>
             </CalendarBody>
+
+            <CalendarFooter>
+                <MonthlyBtn onClick={(e) => props.monthlySchedulerControl().open(e)}>
+                    이번달 진행률
+                </MonthlyBtn>
+            </CalendarFooter>
         </Container>
     )
 }

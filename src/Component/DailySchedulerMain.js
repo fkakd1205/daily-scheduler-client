@@ -6,6 +6,7 @@ import DailySchedulerBody from "./DailySchedulerBody";
 import { dailySchedulerCategoryDataConnect } from "../data_connect/dailySchedulerCategoryDataConnect"
 import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataConnect";
 import { getStartDate, getEndDate } from "../handler/dateHandler"
+import SearchMonthlySchedulerComponent from "../modal/SearchMonthlySchedulerComponent";
 
 
 const TODAY = new Date();
@@ -41,6 +42,7 @@ const DailySchedulerMain = () => {
     const [todayDate, setTodayDate] = useState(TODAY);
 
     const [createDailySchedulerModalOpen, setCreateDailySchedulerModalOpen] = useState(false);
+    const [searchMonthlySchedulerModalOpen, setSearchMonthlySchedulerModalOpen] = useState(false);
 
     const [dailySchedulerCategory, setDailySchedulerCategory] = useState(null);
     const [scheduleInfo, setScheduleInfo] = useState(null);
@@ -65,6 +67,14 @@ const DailySchedulerMain = () => {
 
     const onCreateDailySchedulerModalClose = () => {
         setCreateDailySchedulerModalOpen(false);
+    }
+
+    const onSearchMonthlySchedulerModalOpen = () => {
+        setSearchMonthlySchedulerModalOpen(true);
+    }
+
+    const onSearchMonthlySchedulerModalClose = () => {
+        setSearchMonthlySchedulerModalOpen(false);
     }
     
     const changeSchedulerDate = (month) => {
@@ -141,6 +151,29 @@ const DailySchedulerMain = () => {
                 });
 
                 onCreateDailySchedulerModalOpen(true);
+            }
+        }
+    }
+
+    const monthlyScheduler = () => {
+        return {
+            open: function (e) {
+                e.preventDefault();
+
+                // 이번달 1일
+                let firstDate = getStartDate(new Date(year, month-1, 1));
+                // 다음달 1일의 -1 index
+                let lastDate = getEndDate(new Date(year, month-1, totalDate[totalDate.lastIndexOf(1)-1]));
+
+                dispatchSelectedDateState({
+                    type: 'SET_DATA',
+                    payload: {
+                        startDate: firstDate,
+                        endDate: lastDate
+                    }
+                });
+
+                onSearchMonthlySchedulerModalOpen(true);
             }
         }
     }
@@ -261,6 +294,7 @@ const DailySchedulerMain = () => {
                 nextMonthStartDate={totalDate.indexOf(1, 7) === -1 ? totalDate.length : totalDate.indexOf(1, 7)}
                 
                 schedulerItemControl={() => schedulerItem()}
+                monthlySchedulerControl={() => monthlyScheduler()}
                 changeMonthControl={() => changeMonth()}
             ></DailySchedulerBody>
 
@@ -286,6 +320,24 @@ const DailySchedulerMain = () => {
                     changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
                     updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
                 ></CreateDailySchedulerComponent>
+            </DailySchedulerCommonModal>
+
+            <DailySchedulerCommonModal
+                open={searchMonthlySchedulerModalOpen}
+                onClose={() => onSearchMonthlySchedulerModalClose()}
+                maxWidth={'md'}
+                fullWidth={true}
+            >
+                <SearchMonthlySchedulerComponent
+                    dailySchedulerCategory={dailySchedulerCategory}
+                    scheduleInfo={scheduleInfo}
+                    month={month}
+                    
+                    onClose={() => onSearchMonthlySchedulerModalClose()}
+                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
+                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
+                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
+                ></SearchMonthlySchedulerComponent>
             </DailySchedulerCommonModal>
         </>
     )

@@ -435,11 +435,25 @@ const CreateDailySchedulerComponent = (props) => {
                     }
                 });
             },
+            onChangeCompletedValue: function (e) {
+                let target = e.target.value;
+
+                dispatchScheduleSortingInfoState({
+                    type: 'SET_DATA',
+                    payload: {
+                        completed: JSON.parse(target)
+                    }
+                });
+            },
             changeViewData: function () {
                 let newData = props.scheduleInfo;
 
                 if(scheduleSortingInfoState?.categoryId !== 'total') {
                     newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
+                }
+
+                if(scheduleSortingInfoState?.completed !== 'total') {
+                    newData = newData?.filter(r => scheduleSortingInfoState.completed ? r.completedAt : !r.completedAt);
                 }
 
                 dispatchScheduleEditValueState({
@@ -502,7 +516,11 @@ const CreateDailySchedulerComponent = (props) => {
                                         )
                                     })}
                                 </CategorySelect>
-                                <DataText>완료여부</DataText>
+                                <CategorySelect onChange={(e) => viewSelectControl().onChangeCompletedValue(e)} value={scheduleSortingInfoState?.completed}>
+                                    <option value='total'>완료여부</option>
+                                    <option value={true}>완료</option>
+                                    <option value={false}>미완료</option>
+                                </CategorySelect>
                                 <DataText>스케쥴</DataText>
                                 <DataText>등록일</DataText>
                                 <DataText>완료일</DataText>
