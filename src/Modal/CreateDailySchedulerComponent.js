@@ -476,6 +476,12 @@ const CreateDailySchedulerComponent = (props) => {
 
     const updateSchedule = async (e) => {
         e.preventDefault();
+
+        if(!scheduleEditValueState.length) {
+            alert('변경된 데이터가 없습니다!');
+            return;
+        }
+
         await props.updateScheduleDataControl(scheduleEditValueState);
     }
 
@@ -550,7 +556,7 @@ const CreateDailySchedulerComponent = (props) => {
                             })}
                         </BodyWrapper>
                         <EditControl type="submit">
-                            <span>완료</span>
+                            <span>수정 완료</span>
                         </EditControl>
                     </ViewBox>
                 </form>

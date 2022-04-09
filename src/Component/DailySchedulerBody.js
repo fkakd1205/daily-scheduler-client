@@ -51,7 +51,6 @@ const DayInfo = styled.div`
     padding-bottom: 10px;
     border-bottom: 2px solid #7c7c7c;
     margin-bottom: 1%;
-
 `;
 
 const DateBody = styled.div`
@@ -91,6 +90,12 @@ const DateItem = styled.div`
         color: white;
         cursor: pointer;
     }
+
+
+    @media screen and (max-width: 992px){
+        min-height: 4vh;
+        max-height: 4vh;
+    }
 `;
 
 const OtherMonthItem = styled.div`
@@ -102,6 +107,11 @@ const OtherMonthItem = styled.div`
     min-height: 10vh;
     max-height: 10vh;
     color: #969696;
+
+    @media screen and (max-width: 992px){
+        min-height: 4vh;
+        max-height: 4vh;
+    }
 `;
 
 const DateInfoText = styled.span`
@@ -114,7 +124,7 @@ const ScheduleContentBox = styled.div`
 `;
 
 const MonthlyBtn = styled.button`
-    background-color: #39b1ff;
+    background-color: #4f87fe;
     border: 1px solid transparent;
     padding: 10px 30px;
     font-size: 1.1rem;
@@ -176,7 +186,7 @@ const DailySchedulerBody = (props) => {
 
             <CalendarFooter>
                 <MonthlyBtn onClick={(e) => props.monthlySchedulerControl().open(e)}>
-                    이번달 진행률
+                    월별 진행률
                 </MonthlyBtn>
             </CalendarFooter>
         </Container>
