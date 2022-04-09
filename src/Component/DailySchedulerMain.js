@@ -8,40 +8,9 @@ import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataCon
 import { getStartDate, getEndDate } from "../handler/dateHandler"
 import SearchMonthlySchedulerComponent from "../modal/SearchMonthlySchedulerComponent";
 
-const initialSelectedDateState = null;
-const initialDateInfoState = null;
 
-const selectedDateReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA':
-            return action.payload;
-        case 'SET_DATA':
-            return {
-                ...state,
-                date: action.payload.date,
-                startDate: action.payload.startDate,
-                endDate: action.payload.endDate
-            }
-        case 'CLEAR':
-            return initialSelectedDateState;
-        default: return { ...state }
-    }
-}
-
-const dateInfoReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA':
-            return action.payload;
-        case 'SET_DATA':
-            return {
-                ...state,
-                [action.payload.name]: action.payload.value
-            }
-        case 'CLEAR':
-            return initialDateInfoState;
-        default: return { ...state }
-    }
-}
+const JANUARY = 1;
+const DECEMBER = 12;
 
 const DailySchedulerMain = () => {
     // Date Info
@@ -136,23 +105,15 @@ const DailySchedulerMain = () => {
                     dispatchDateInfoState({
                         type: 'SET_DATA',
                         payload: {
-                            name: "year",
-                            value: dateInfoState.year - 1
+                            year: dateInfoState.year - 1,
+                            month: DECEMBER
                         }
-                    });
-                    dispatchDateInfoState({
-                        type: 'SET_DATA',
-                        payload: {
-                            name: "month",
-                            value: 12
-                        }
-                    });
+                    })
                 }else {
                     dispatchDateInfoState({
                         type: 'SET_DATA',
                         payload: {
-                            name: "month",
-                            value: dateInfoState.month - 1
+                            month: dateInfoState.month - 1
                         }
                     });
                 }
@@ -164,25 +125,17 @@ const DailySchedulerMain = () => {
                     dispatchDateInfoState({
                         type: 'SET_DATA',
                         payload: {
-                            name: "year",
-                            value: dateInfoState.year + 1
+                            year: dateInfoState.year + 1,
+                            month: JANUARY
                         }
-                    });
-                    dispatchDateInfoState({
-                        type: 'SET_DATA',
-                        payload: {
-                            name: "month",
-                            value: 1
-                        }
-                    });
+                    })
                 }else {
                     dispatchDateInfoState({
                         type: 'SET_DATA',
                         payload: {
-                            name: "month",
-                            value: dateInfoState.month + 1
+                            month: dateInfoState.month + 1
                         }
-                    });
+                    })
                 }
             }
         }
@@ -208,6 +161,25 @@ const DailySchedulerMain = () => {
                 });
 
                 onCreateDailySchedulerModalOpen(true);
+            },
+            isToday: function (item) {
+                if((item === dateInfoState.today?.getDate())
+                     && (dateInfoState.month === dateInfoState.today?.getMonth() + 1)
+                     && (dateInfoState.year === dateInfoState.today?.getFullYear())){
+                        return true;
+                }else {
+                    return false;
+                }
+            },
+            isThisMonthDate: function (index) {
+                let prevMonthLastDate = totalDate.indexOf(1)
+                let nextMonthStartDate = totalDate.indexOf(1, 7) === -1 ? totalDate.length : totalDate.indexOf(1, 7)
+                
+                if(index < prevMonthLastDate || index >= nextMonthStartDate) {
+                    return false;
+                }else {
+                    return true;
+                }
             }
         }
     }
@@ -246,10 +218,6 @@ const DailySchedulerMain = () => {
                     })
                     .catch(err => {
                         let res = err.response;
-                        if(res?.status === 500) {
-                            alert("undefined error.");
-                            return;
-                        }
                         alert(res?.memo);
                     })
             },
@@ -262,10 +230,6 @@ const DailySchedulerMain = () => {
                     })
                     .catch(err => {
                         let res = err.response;
-                        if (res?.status === 500) {
-                            alert("undefined error.");
-                            return;
-                        }
                         alert(res?.memo);
                     })
             },
@@ -279,10 +243,6 @@ const DailySchedulerMain = () => {
                     })
                     .catch(err => {
                         let res = err.response;
-                        if (res?.status === 500) {
-                            alert("undefined error.");
-                            return;
-                        }
                         alert(res?.memo);
                     })
             },
@@ -296,10 +256,6 @@ const DailySchedulerMain = () => {
                     })
                     .catch(err => {
                         let res = err.response;
-                        if (res?.status === 500) {
-                            alert("undefined error.");
-                            return;
-                        }
                         alert(res?.memo);
                     })
             },
@@ -312,10 +268,6 @@ const DailySchedulerMain = () => {
                     })
                     .catch(err => {
                         let res = err.response;
-                        if (res?.status === 500) {
-                            alert("undefined error.");
-                            return;
-                        }
                         alert(res?.memo);
                     })
             },
@@ -329,10 +281,6 @@ const DailySchedulerMain = () => {
                     })
                     .catch(err => {
                         let res = err.response;
-                        if (res?.status === 500) {
-                            alert("undefined error.");
-                            return;
-                        }
                         alert(res?.memo);
                     })
             }
@@ -345,8 +293,6 @@ const DailySchedulerMain = () => {
             <DailySchedulerBody
                 dateInfoState={dateInfoState}
                 totalDate={totalDate}
-                prevMonthLastDate={totalDate.indexOf(1)}
-                nextMonthStartDate={totalDate.indexOf(1, 7) === -1 ? totalDate.length : totalDate.indexOf(1, 7)}
                 
                 schedulerItemControl={() => schedulerItem()}
                 monthlySchedulerControl={() => monthlyScheduler()}
@@ -397,3 +343,41 @@ const DailySchedulerMain = () => {
 }
 
 export default DailySchedulerMain;
+
+const initialSelectedDateState = null;
+const initialDateInfoState = null;
+
+const selectedDateReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA':
+            return action.payload;
+        case 'SET_DATA':
+            return {
+                ...state,
+                date: action.payload.date,
+                startDate: action.payload.startDate,
+                endDate: action.payload.endDate
+            }
+        case 'CLEAR':
+            return initialSelectedDateState;
+        default: return { ...state }
+    }
+}
+
+const dateInfoReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA':
+            return action.payload;
+        case 'SET_DATA':
+            return {
+                ...state,
+                today: action.payload.today ?? state.today,
+                year: action.payload.year ?? state.year,
+                month: action.payload.month ?? state.month,
+                todayDate: action.payload.todayDate ?? state.todayDate
+            }
+        case 'CLEAR':
+            return initialDateInfoState;
+        default: return { ...state }
+    }
+}

@@ -21,9 +21,21 @@ const CalendarHead = styled.div`
 
 const CalendarFooter = styled.div`
     padding: 10px;
-`;
 
-const MonthControlBox = styled.div`
+    button {
+        background-color: #4f87fe;
+        border: 1px solid transparent;
+        padding: 10px 30px;
+        font-size: 1.1rem;
+        font-weight: 600;
+        float: right;
+        border-radius: 5px;
+        color: white;
+
+        :hover {
+            cursor: pointer;
+        }
+    }
 `;
 
 const MonthControlBtn = styled.button`
@@ -77,6 +89,10 @@ const DateItem = styled.div`
     min-height: 10vh;
     max-height: 10vh;
 
+    &.other-month {
+        background-color: #e4e4e4aa;
+    }
+
     &.today {
         font-weight: 700;
         background-color: #b0e0ff;
@@ -84,7 +100,7 @@ const DateItem = styled.div`
 
     }
 
-    &:hover{
+    :hover{
         background-color: #8fd3ff;
         font-weight: 700;
         color: white;
@@ -98,45 +114,8 @@ const DateItem = styled.div`
     }
 `;
 
-const OtherMonthItem = styled.div`
-    padding: 10px;
-    background-color: #e4e4e4aa;
-    box-shadow: 1px 1px 15px #a9b3d599;
-    transition: 0.3s;
-    border-radius: 3px;
-    min-height: 10vh;
-    max-height: 10vh;
-    color: #969696;
-
-    @media screen and (max-width: 992px){
-        min-height: 4vh;
-        max-height: 4vh;
-    }
-`;
-
 const DateInfoText = styled.span`
     float: right;
-`;
-
-const ScheduleContentBox = styled.div`
-    min-height: 55px;
-    max-height: 55px;
-`;
-
-const MonthlyBtn = styled.button`
-    background-color: #4f87fe;
-    border: 1px solid transparent;
-    padding: 10px 30px;
-    font-size: 1.1rem;
-    font-weight: 600;
-    float: right;
-    border-radius: 5px;
-    color: white;
-
-    &:hover {
-        cursor: pointer;
-    }
-
 `;
 
 const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];
@@ -147,10 +126,10 @@ const DailySchedulerBody = (props) => {
             <CalendarHead>
                 <span>{props.dateInfoState.year} Daily Scheduler</span>
                 <span>{props.dateInfoState.month} 월</span>
-                <MonthControlBox>
+                <div>
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetPrevMonth(e)}><ArrowBackIcon /></MonthControlBtn>
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
-                </MonthControlBox>
+                </div>
             </CalendarHead>
 
             <CalendarBody>
@@ -164,30 +143,21 @@ const DailySchedulerBody = (props) => {
                 <DateBody>
                     {props.totalDate?.map((item, index) => {
                         return (
-                            (index < props.prevMonthLastDate || index >= props.nextMonthStartDate) ?
-                                <OtherMonthItem key={'date_item_idx' + index}>
-                                    <DateInfoText>{item}</DateInfoText>
-                                    <ScheduleContentBox>
-                                    </ScheduleContentBox>
-                                </OtherMonthItem>
-                                :
-                                <DateItem key={'date_item_idx' + index}
-                                    className={(item === props.dateInfoState.today?.getDate()) && (props.dateInfoState.month === props.dateInfoState.today?.getMonth() + 1) && (props.dateInfoState.year === props.dateInfoState.today?.getFullYear()) ? 'today' : ''}
-                                    onClick={(e) => props.schedulerItemControl().open(e, item)} >
-                                    <DateInfoText>{item}</DateInfoText>
-                                    <ScheduleContentBox>
-
-                                    </ScheduleContentBox>
-                                </DateItem>
+                            <DateItem key={'date_item_idx' + index}
+                                onClick={(e) => props.schedulerItemControl().open(e, item)}
+                                className={props.schedulerItemControl().isToday(item) ? 'today' : '' || props.schedulerItemControl().isThisMonthDate(index) ? '' : 'other-month'}
+                            >
+                                <span>{item}</span>
+                            </DateItem>
                         )
                     })}
                 </DateBody>
             </CalendarBody>
 
             <CalendarFooter>
-                <MonthlyBtn onClick={(e) => props.monthlySchedulerControl().open(e)}>
+                <button onClick={(e) => props.monthlySchedulerControl().open(e)}>
                     월별 진행률
-                </MonthlyBtn>
+                </button>
             </CalendarFooter>
         </Container>
     )
