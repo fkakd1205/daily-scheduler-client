@@ -26,7 +26,6 @@ const dailySchedulerDataConnect = () => {
         },
         deleteScheduleData: async function (scheduleId) {
             return await axios.delete(`${API_SERVER_ADDRESS}/api/v1/schedules/${scheduleId}`, {
-
             });
         },
         changeScheduleData: async function (data) {

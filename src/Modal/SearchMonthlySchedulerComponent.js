@@ -264,7 +264,7 @@ const SearchMonthlySchedulerComponent = (props) => {
     return (
         <Container>
             <HeaderContainer>
-                <HeaderTitle>{props.month}월 진행률</HeaderTitle>
+                <HeaderTitle>{props.dateInfoState.month}월 진행률</HeaderTitle>
                 <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
             </HeaderContainer>
             <ProgressBox>

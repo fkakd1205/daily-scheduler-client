@@ -145,8 +145,8 @@ const DailySchedulerBody = (props) => {
     return (
         <Container>
             <CalendarHead>
-                <span>{props.year} Daily Scheduler</span>
-                <span>{props.month} 월</span>
+                <span>{props.dateInfoState.year} Daily Scheduler</span>
+                <span>{props.dateInfoState.month} 월</span>
                 <MonthControlBox>
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetPrevMonth(e)}><ArrowBackIcon /></MonthControlBtn>
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
@@ -172,7 +172,7 @@ const DailySchedulerBody = (props) => {
                                 </OtherMonthItem>
                                 :
                                 <DateItem key={'date_item_idx' + index}
-                                    className={(item === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear()) ? 'today' : ''}
+                                    className={(item === props.dateInfoState.today?.getDate()) && (props.dateInfoState.month === props.dateInfoState.today?.getMonth() + 1) && (props.dateInfoState.year === props.dateInfoState.today?.getFullYear()) ? 'today' : ''}
                                     onClick={(e) => props.schedulerItemControl().open(e, item)} >
                                     <DateInfoText>{item}</DateInfoText>
                                     <ScheduleContentBox>

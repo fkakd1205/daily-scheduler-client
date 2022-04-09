@@ -493,7 +493,7 @@ const CreateDailySchedulerComponent = (props) => {
                     <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
                 </HeaderContainer>
                 <BodyContainer>
-                    {(props.selectedDateState?.date === props.todayDate?.getDate()) && (props.month === props.todayDate?.getMonth() + 1) && (props.year === props.todayDate?.getFullYear()) &&
+                    {(props.selectedDateState?.date === props.dateInfoState.todayDate) && (props.dateInfoState.month === props.dateInfoState.today?.getMonth() + 1) && (props.dateInfoState.year === props.dateInfoState.today?.getFullYear()) &&
                         <CreateBox>
                             <ScheduleCategoryBox>
                                 {props.dailySchedulerCategory?.map((r, index) => {
