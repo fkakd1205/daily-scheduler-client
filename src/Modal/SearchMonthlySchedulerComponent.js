@@ -43,7 +43,6 @@ const CloseBtn = styled.button`
 `;
 
 const BodyWrapper = styled.div`
-    /* padding: 2%; */
     background-color: #eeeeeeb3;
     border-radius: 5px;
     min-height: 50vh;
@@ -88,7 +87,6 @@ const ProgressBox = styled.div`
 const useStyles = makeStyles((theme) => ({
     progressBar: {
         height: 12,
-        // borderRadius: 5,
         [`&.${linearProgressClasses.colorPrimary}`]: {
           backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 800 : 200],
         },

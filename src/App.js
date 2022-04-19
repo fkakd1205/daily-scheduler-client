@@ -18,7 +18,6 @@ const App = () => {
         {/* Router */}
         <BrowserRouter>
           <Routes>
-            {/* TODO::Header추가 */}
             <Route path="/" exact element={<DailySchedulerMain />} />
           </Routes>
         </BrowserRouter>

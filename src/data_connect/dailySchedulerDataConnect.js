@@ -10,12 +10,6 @@ const dailySchedulerDataConnect = () => {
                 // withCredentials: true
             });
         },
-        // searchSchduleInfo: async function () {
-        //     return await axios.get(`${API_SERVER_ADDRESS}/api/v1/schedules`, {
-        //         // TODO :: CORS 설정 후 추가하기
-        //         // withCredentials: true
-        //     });
-        // },
         searchSchduleInfoByDate: async function (startDate, endDate) {
             return await axios.get(`${API_SERVER_ADDRESS}/api/v1/schedules/date`, {
                 params : {
