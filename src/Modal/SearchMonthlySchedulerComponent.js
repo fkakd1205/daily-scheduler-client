@@ -2,7 +2,8 @@ import styled from 'styled-components';
 import React, { useEffect, useReducer, useState } from "react";
 import { dateToYYYYMMDD } from '../handler/dateHandler';
 
-import CancelIcon from '@mui/icons-material/Cancel';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import { makeStyles } from "@material-ui/core/styles";
 import Checkbox from '@mui/material/Checkbox';
 import LinearProgress, { linearProgressClasses } from '@mui/material/LinearProgress';
@@ -11,34 +12,28 @@ const Container = styled.div`
 `;
 
 const HeaderContainer = styled.div`
-    display: flex;
-    align-items: center;
+    padding: 10px 20px;
     border-bottom: 1px solid #000;
-    justify-content: space-between;
-    width: 100%;
-`;
 
-const HeaderTitle = styled.span`
-    font-size: 1.4rem;
-    font-weight: 700;
-    padding: 0 5%;
-`;
-
-const CloseBtn = styled.button`
-    background: none;
-    border:none;
-    padding: 1.2% 3%;
-    transition: 0.4s;
-    color: #595959;
-
-    &:hover{
-        transform: scale(1.1);
-        color: #56bfff;
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center
     }
-    &:active{
-        transition: 0.1s;
-        transform: scale(1.05);
-        color: #8fd3ff;
+
+    .modal-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        @media only screen and (max-width:576px){
+            font-size: 16px;
+        }
+    }
+
+    .modal-close-btn {
+        color: #5c5c7e;
+        &:hover {
+            color: #80808b;
+        }
     }
 `;
 
@@ -227,8 +222,12 @@ const SearchMonthlySchedulerComponent = (props) => {
     return (
         <Container>
             <HeaderContainer>
-                <HeaderTitle>{props.dateInfoState.month}월 진행률</HeaderTitle>
-                <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
+                <div className="header-top">
+                        <div className="modal-title">{props.dateInfoState.month}월 진행률</div>
+                        <IconButton className="modal-close-btn" aria-label="close" onClick={(e) => onCloseModal(e)}>
+                            <CloseIcon />
+                        </IconButton>
+                    </div>
             </HeaderContainer>
             <ProgressBox>
                 <span>{progressionRate ?? 0}%</span>
