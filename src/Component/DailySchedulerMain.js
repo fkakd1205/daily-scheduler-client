@@ -8,7 +8,6 @@ import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataCon
 import { getStartDate, getEndDate } from "../handler/dateHandler"
 import SearchMonthlySchedulerComponent from "../modal/SearchMonthlySchedulerComponent";
 
-
 const JANUARY = 1;
 const DECEMBER = 12;
 
@@ -289,11 +288,11 @@ const DailySchedulerMain = () => {
 
     return (
         dateInfoState &&
-        <>
+        <div className="schedule-body">
             <DailySchedulerBody
                 dateInfoState={dateInfoState}
                 totalDate={totalDate}
-                
+
                 schedulerItemControl={() => schedulerItem()}
                 monthlySchedulerControl={() => monthlyScheduler()}
                 changeMonthControl={() => changeMonth()}
@@ -309,8 +308,8 @@ const DailySchedulerMain = () => {
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
                     selectedDateState={selectedDateState}
-                    dateInfoState={dateInfoState} 
-                
+                    dateInfoState={dateInfoState}
+
                     onClose={() => onCreateDailySchedulerModalClose()}
                     searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
                     searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
@@ -331,14 +330,14 @@ const DailySchedulerMain = () => {
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
                     dateInfoState={dateInfoState}
-                    
+
                     onClose={() => onSearchMonthlySchedulerModalClose()}
                     searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
                     searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
                     scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
                 ></SearchMonthlySchedulerComponent>
             </DailySchedulerCommonModal>
-        </>
+        </div>
     )
 }
 

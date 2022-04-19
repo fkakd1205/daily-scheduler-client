@@ -1,10 +1,10 @@
-import styled, {css} from 'styled-components';
+import styled from 'styled-components';
 import React, { useState } from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 
 const Container = styled.div`
-    padding-bottom: 5%;
+    padding: 2% 5%;
 `;
 
 const CalendarHead = styled.div`
@@ -17,6 +17,12 @@ const CalendarHead = styled.div`
     padding: 5px;
     height: 4vw;
     align-items: center;
+
+    @media screen and (max-width: 992px){
+        grid-template-columns: repeat(3, 1fr);
+        font-size: 1.2rem;
+        height: auto;
+    }
 `;
 
 const CalendarFooter = styled.div`
@@ -35,7 +41,11 @@ const CalendarFooter = styled.div`
         :hover {
             cursor: pointer;
         }
+        @media screen and (max-width: 992px) {
+            font-size: 12px;
+        }
     }
+
 `;
 
 const MonthControlBtn = styled.button`
@@ -109,13 +119,15 @@ const DateItem = styled.div`
 
 
     @media screen and (max-width: 992px){
-        min-height: 4vh;
-        max-height: 4vh;
+        font-size: 12px;
+        min-height: 6vh;
+        max-height: 6vh;
     }
-`;
-
-const DateInfoText = styled.span`
-    float: right;
+    
+    @media screen and (max-width: 576px){
+        min-height: auto;
+        min-height: auto;
+    }
 `;
 
 const WEEKDAY = ['일', '월', '화', '수', '목', '금', '토'];

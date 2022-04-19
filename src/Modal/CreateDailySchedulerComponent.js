@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import React, { useEffect, useReducer, useState } from "react";
-import CancelIcon from '@mui/icons-material/Cancel';
+import IconButton from '@material-ui/core/IconButton';
+import CloseIcon from '@material-ui/icons/Close';
 import { dateToYYYYMMDD } from '../handler/dateHandler';
 import Checkbox from '@mui/material/Checkbox';
 import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
@@ -10,39 +11,32 @@ const Container = styled.div`
 `;
 
 const HeaderContainer = styled.div`
-    display: flex;
-    align-items: center;
+    padding: 10px 20px;
     border-bottom: 1px solid #000;
-    justify-content: space-between;
-    width: 100%;
-`;
 
-const HeaderTitle = styled.span`
-    font-size: 1.4rem;
-    font-weight: 700;
-    padding: 0 5%;
-`;
-
-const CloseBtn = styled.button`
-    background: none;
-    border:none;
-    padding: 1.2% 3%;
-    transition: 0.4s;
-    color: #595959;
-
-    &:hover{
-        transform: scale(1.1);
-        color: #56bfff;
+    .header-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center
     }
-    &:active{
-        transition: 0.1s;
-        transform: scale(1.05);
-        color: #8fd3ff;
+
+    .modal-title {
+        font-size: 1.3rem;
+        font-weight: 700;
+        @media only screen and (max-width:576px){
+            font-size: 16px;
+        }
+    }
+
+    .modal-close-btn {
+        color: #5c5c7e;
+        &:hover {
+            color: #80808b;
+        }
     }
 `;
 
 const BodyContainer = styled.div`
-    /* background-color: blue; */
     padding: 2% 5%;
 `;
 
@@ -197,57 +191,6 @@ const CategorySelect = styled.select`
         outline: none;
     }
 `;
-
-const initialScheduleInfoValueState = null;
-const initialScheduleEditValueState = null;
-const initialScheduleSortingInfo = null;
-
-const scheduleInfoValueStateReducer =  (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA': 
-            return action.payload;
-        case 'SET_DATA': 
-            return {
-                ...state,
-                [action.payload.name] : action.payload.value
-            }
-        case 'CLEAR':
-            return null;
-        default: return { ...state }
-    }
-}
-
-const scheduleEditValueStateReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA': 
-            return action.payload;
-        case 'SET_DATA': 
-            return action.payload;
-        case 'CLEAR':
-            return null;
-        default: return { ...state }
-    }
-}
-
-const scheduleSortingInfoReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA':
-            return {
-                ...state,
-                categoryId: 'total',
-                completed: 'total'
-            }
-        case 'SET_DATA':
-            return {
-                ...state,
-                categoryId: action.payload.categoryId ?? state.categoryId,
-                completed: action.payload.completed ?? state.completed
-            }
-        case 'CLEAR':
-            return null;
-        default: return { ...state }
-    }
-}
 
 const CreateDailySchedulerComponent = (props) => {
     const [scheduleInfoValueState, dispatchScheduleInfoValueState] = useReducer(scheduleInfoValueStateReducer, initialScheduleInfoValueState);
@@ -489,8 +432,12 @@ const CreateDailySchedulerComponent = (props) => {
         <Container>
             <form onSubmit={(e) => scheduleSubmit(e)}>
                 <HeaderContainer>
-                    <HeaderTitle>등록 및 조회</HeaderTitle>
-                    <CloseBtn onClick={(e) => onCloseModal(e)}><CancelIcon fontSize="large" /></CloseBtn>
+                    <div className="header-top">
+                        <div className="modal-title">등록 및 조회</div>
+                        <IconButton className="modal-close-btn" aria-label="close" onClick={(e) => onCloseModal(e)}>
+                            <CloseIcon />
+                        </IconButton>
+                    </div>
                 </HeaderContainer>
                 <BodyContainer>
                     {(props.selectedDateState?.date === props.dateInfoState.todayDate) && (props.dateInfoState.month === props.dateInfoState.today?.getMonth() + 1) && (props.dateInfoState.year === props.dateInfoState.today?.getFullYear()) &&
@@ -566,3 +513,54 @@ const CreateDailySchedulerComponent = (props) => {
 }
 
 export default CreateDailySchedulerComponent;
+
+const initialScheduleInfoValueState = null;
+const initialScheduleEditValueState = null;
+const initialScheduleSortingInfo = null;
+
+const scheduleInfoValueStateReducer =  (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA': 
+            return action.payload;
+        case 'SET_DATA': 
+            return {
+                ...state,
+                [action.payload.name] : action.payload.value
+            }
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
+
+const scheduleEditValueStateReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA': 
+            return action.payload;
+        case 'SET_DATA': 
+            return action.payload;
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
+
+const scheduleSortingInfoReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA':
+            return {
+                ...state,
+                categoryId: 'total',
+                completed: 'total'
+            }
+        case 'SET_DATA':
+            return {
+                ...state,
+                categoryId: action.payload.categoryId ?? state.categoryId,
+                completed: action.payload.completed ?? state.completed
+            }
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}

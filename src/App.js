@@ -1,6 +1,6 @@
 import GlobalStyles from './GlobalStyles';
 import React from "react";
-import { BrowserRouter, Router, Route, Switch, Routes } from 'react-router-dom';
+import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from "@material-ui/core/styles";
 import { unstable_createMuiStrictModeTheme } from '@material-ui/core/styles';
 

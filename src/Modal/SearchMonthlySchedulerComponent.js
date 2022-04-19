@@ -61,7 +61,7 @@ const BodyWrapper = styled.div`
 
 const DataGroup = styled.div`
     display: grid;
-    grid-template-columns: repeat(6, 10% 10% 50% 10% 10% 10%);
+    grid-template-columns: repeat(6, 10% 10% 50% 15% 15%);
     column-gap: 5px;
     padding: 10px 20px;
     align-items: center;
@@ -98,41 +98,6 @@ const useStyles = makeStyles((theme) => ({
         },
     }
 }));
-
-const initialScheduleValueState = null;
-const initialScheduleSortingInfo = null;
-
-const scheduleValueStateReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA': 
-            return action.payload;
-        case 'SET_DATA': 
-            return action.payload;
-        case 'CLEAR':
-            return null;
-        default: return { ...state }
-    }
-}
-
-const scheduleSortingInfoReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA':
-            return {
-                ...state,
-                categoryId: 'total',
-                completed: 'total'
-            }
-        case 'SET_DATA':
-            return {
-                ...state,
-                categoryId: action.payload.categoryId ?? state.categoryId,
-                completed: action.payload.completed ?? state.completed
-            }
-        case 'CLEAR':
-            return null;
-        default: return { ...state }
-    }
-}
 
 const SearchMonthlySchedulerComponent = (props) => {
     const classes = useStyles();
@@ -309,3 +274,38 @@ const SearchMonthlySchedulerComponent = (props) => {
 }
 
 export default SearchMonthlySchedulerComponent;
+
+const initialScheduleValueState = null;
+const initialScheduleSortingInfo = null;
+
+const scheduleValueStateReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA': 
+            return action.payload;
+        case 'SET_DATA': 
+            return action.payload;
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
+
+const scheduleSortingInfoReducer = (state, action) => {
+    switch (action.type) {
+        case 'INIT_DATA':
+            return {
+                ...state,
+                categoryId: 'total',
+                completed: 'total'
+            }
+        case 'SET_DATA':
+            return {
+                ...state,
+                categoryId: action.payload.categoryId ?? state.categoryId,
+                completed: action.payload.completed ?? state.completed
+            }
+        case 'CLEAR':
+            return null;
+        default: return { ...state }
+    }
+}
