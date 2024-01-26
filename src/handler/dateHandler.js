@@ -24,7 +24,6 @@ function getEndDate(date) {
     endDate.setMinutes(59);
     endDate.setSeconds(59);
     return dateToYYYYMMDDhhmm(endDate);
-
 }
 
 export {

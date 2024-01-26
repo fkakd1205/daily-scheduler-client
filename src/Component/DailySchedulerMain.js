@@ -7,6 +7,8 @@ import { dailySchedulerCategoryDataConnect } from "../data_connect/dailySchedule
 import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataConnect";
 import { getStartDate, getEndDate } from "../handler/dateHandler"
 import SearchMonthlySchedulerComponent from "../modal/SearchMonthlySchedulerComponent";
+import DailySchedulerModalMain from "./modal/daily-scheduler-modal/DailySchedulerModalMain";
+import MonthlySchedulerModalMain from "./modal/monthly-scheduler-modal/MonthlySchedulerModalMain";
 
 const JANUARY = 1;
 const DECEMBER = 12;
@@ -304,7 +306,7 @@ const DailySchedulerMain = () => {
                 maxWidth={'md'}
                 fullWidth={true}
             >
-                <CreateDailySchedulerComponent
+                {/* <CreateDailySchedulerComponent
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
                     selectedDateState={selectedDateState}
@@ -317,7 +319,21 @@ const DailySchedulerMain = () => {
                     scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
                     changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
                     updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
-                ></CreateDailySchedulerComponent>
+                ></CreateDailySchedulerComponent> */}
+                <DailySchedulerModalMain
+                    dailySchedulerCategory={dailySchedulerCategory}
+                    scheduleInfo={scheduleInfo}
+                    selectedDateState={selectedDateState}
+                    dateInfoState={dateInfoState}
+
+                    onClose={() => onCreateDailySchedulerModalClose()}
+                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
+                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
+                    scheduleInfoSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
+                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
+                    changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
+                    updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
+                />
             </DailySchedulerCommonModal>
 
             <DailySchedulerCommonModal
@@ -326,7 +342,7 @@ const DailySchedulerMain = () => {
                 maxWidth={'md'}
                 fullWidth={true}
             >
-                <SearchMonthlySchedulerComponent
+                {/* <SearchMonthlySchedulerComponent
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
                     dateInfoState={dateInfoState}
@@ -335,7 +351,18 @@ const DailySchedulerMain = () => {
                     searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
                     searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
                     scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
-                ></SearchMonthlySchedulerComponent>
+                ></SearchMonthlySchedulerComponent> */}
+
+                <MonthlySchedulerModalMain
+                    dailySchedulerCategory={dailySchedulerCategory}
+                    scheduleInfo={scheduleInfo}
+                    dateInfoState={dateInfoState}
+
+                    onClose={() => onSearchMonthlySchedulerModalClose()}
+                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
+                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
+                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
+                />
             </DailySchedulerCommonModal>
         </div>
     )
