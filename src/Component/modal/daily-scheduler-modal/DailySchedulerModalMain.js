@@ -1,5 +1,8 @@
 import React, { useEffect, useReducer, useState } from "react";
 import DailySchedulerModalBody from "./DailySchedulerModalBody";
+import { dailySchedulerCategoryDataConnect } from "../../../data_connect/dailySchedulerCategoryDataConnect";
+import { dailySchedulerDataConnect } from "../../../data_connect/dailySchedulerDataConnect";
+import { getEndDate, getStartDate } from "../../../handler/dateHandler";
 
 export default function DailySchedulerModalMain(props) {
     const [scheduleInfoValueState, dispatchScheduleInfoValueState] = useReducer(scheduleInfoValueStateReducer, initialScheduleInfoValueState);
@@ -9,10 +12,12 @@ export default function DailySchedulerModalMain(props) {
     const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
     const [checkedScheduleInfoList, setCheckedScheduleInfoList] = useState([]);
 
+    const [categories, setCategories] = useState(null);
+    const [schedules, setSchedules] = useState(null);
+
     useEffect(() => {
         async function getInitData() {
-            await props.searchDailySchedulerCategoryControl();
-            await props.searchScheduleInfoControl();
+            await __dataConnectControl().searchCategories()
 
             // 기본 카테고리 select 선택
             dispatchScheduleSortingInfoState({
@@ -24,26 +29,44 @@ export default function DailySchedulerModalMain(props) {
     }, [])
 
     useEffect(() => {
-        function initSchedule() {
-            if(!props.scheduleInfo) {
-                return;
-            }
+        async function getDailySchedule(startDate, endDate) {
+            await __dataConnectControl().searchSchedules(startDate, endDate)
+        }
+        
+        if(!props.selectedDate) {
+            return
+        }
 
+        let date = props.selectedDate
+        let startDate = getStartDate(date);
+        let endDate = getEndDate(date);
+
+        getDailySchedule(startDate, endDate)
+    }, [props.selectedDate])
+
+    useEffect(() => {
+        function initSchedule() {
+            console.log(schedules)
             dispatchScheduleEditValueState({
                 type: 'INIT_DATA',
-                payload: props.scheduleInfo
+                payload: schedules
             });
         }
+        
+        if(!schedules) {
+            return;
+        }
+
         initSchedule();
-    }, [props.scheduleInfo]);
+    }, [schedules]);
 
     useEffect(() => {
         function getCompletedSchedule() {
-            if(!props.scheduleInfo) {
+            if(!schedules) {
                 return;
             }
             
-            let completedIdList = props.scheduleInfo.filter(r => r.completed).map(r => r.id);
+            let completedIdList = schedules.filter(r => r.completed).map(r => r.id);
             if(completedIdList) {
                 setCompletedScheduleInfoList(completedIdList);
                 setCheckedScheduleInfoList(completedIdList);
@@ -51,19 +74,19 @@ export default function DailySchedulerModalMain(props) {
         }
 
         getCompletedSchedule();
-    }, [props.scheduleInfo]);
+    }, [schedules]);
 
     // 선택된 카테고리로 스케쥴 조회
     useEffect(() => {
         function changeSort() {
-            if(!(scheduleSortingInfoState && props.scheduleInfo)) {
+            if(!(scheduleSortingInfoState && schedules)) {
                 return;
             }
 
             viewSelectControl().changeViewData();
         }
         changeSort();
-    }, [scheduleSortingInfoState, props.scheduleInfo])
+    }, [scheduleSortingInfoState, schedules])
 
     const onCloseModal = (e) => {
         e.preventDefault();
@@ -90,7 +113,13 @@ export default function DailySchedulerModalMain(props) {
             return;
         }
 
-        await props.scheduleInfoSubmitControl(scheduleInfoValueState);
+        // await props.scheduleInfoSubmitControl(scheduleInfoValueState);
+        let date = props.selectedDate
+        let startDate = getStartDate(date);
+        let endDate = getEndDate(date);
+
+        await __dataConnectControl().createSchdule(scheduleInfoValueState);
+        await __dataConnectControl().searchSchedules(startDate, endDate);
 
         dispatchScheduleInfoValueState({
             type: 'CLEAR'
@@ -98,7 +127,7 @@ export default function DailySchedulerModalMain(props) {
     }
 
     const convertCategoryName = (categoryId) => {
-        return props.dailySchedulerCategory?.filter(r => r.id === categoryId)[0].name;
+        return categories?.filter(r => r.id === categoryId)[0].name;
     }
 
     const scheduleStatusControl = () => {
@@ -148,7 +177,13 @@ export default function DailySchedulerModalMain(props) {
                         id: scheduleId,
                         completed: false
                     }
-                    await props.changeScheduleDataControl(data);
+
+                    let date = props.selectedDate
+                    let startDate = getStartDate(date);
+                    let endDate = getEndDate(date);
+
+                    await __dataConnectControl().changeScheduleData(data);
+                    await __dataConnectControl().searchSchedules(startDate, endDate)
                 }
             }
         }
@@ -200,7 +235,7 @@ export default function DailySchedulerModalMain(props) {
                 });
             },
             changeViewData: function () {
-                let newData = props.scheduleInfo;
+                let newData = schedules;
 
                 if(scheduleSortingInfoState?.categoryId !== 'total') {
                     newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
@@ -222,7 +257,13 @@ export default function DailySchedulerModalMain(props) {
         e.preventDefault();
 
         if(window.confirm('정말 삭제하시겠습니다?')){
-            await props.scheduleDeleteControl(sheduleId);
+            // await props.scheduleDeleteControl(sheduleId);
+            let date = props.selectedDate
+            let startDate = getStartDate(date);
+            let endDate = getEndDate(date);
+
+            await __dataConnectControl().deleteSchedule(sheduleId);
+            await __dataConnectControl().searchSchedules(startDate, endDate);
         }
     }
 
@@ -234,16 +275,95 @@ export default function DailySchedulerModalMain(props) {
             return;
         }
 
-        await props.updateScheduleDataControl(scheduleEditValueState);
+        let date = props.selectedDate
+        let startDate = getStartDate(date);
+        let endDate = getEndDate(date);
+
+        await __dataConnectControl().updateScheduleData(scheduleEditValueState);
+        await __dataConnectControl().searchSchedules(startDate, endDate)
+    }
+
+    const __dataConnectControl = () => {
+        return {
+            searchCategories: async function () {
+                await dailySchedulerCategoryDataConnect().searchDailySchedulerCategory()
+                    .then(res => {
+                        if(res.status === 200 && res.data.message === "success") {
+                            setCategories(res.data.data)
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            },
+            searchSchedules: async function (startDate, endDate) {
+                await dailySchedulerDataConnect().searchSchduleInfoByDate(startDate, endDate)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            setSchedules(res.data.data);
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            },
+            createSchdule: async function (data) {
+                await dailySchedulerDataConnect().createScheduleContent(data)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            alert('저장되었습니다.');
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            },
+            deleteSchedule: async function (scheduleId) {
+                await dailySchedulerDataConnect().deleteScheduleData(scheduleId)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            alert('삭제되었습니다.');
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            },
+            changeScheduleData: async function (data) {
+                await dailySchedulerDataConnect().changeScheduleData(data)
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            },
+            updateScheduleData: async function (data) {
+                await dailySchedulerDataConnect().updateScheduleData(data)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            alert('완료되었습니다.');
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            }
+        }
     }
 
     return (
         <>
             <DailySchedulerModalBody
-                selectedDateState={props.selectedDateState}
-                dateInfoState={props.dateInfoState}
-                dailySchedulerCategory={props.dailySchedulerCategory}
+                selectedDate={props.selectedDate}
+                today={props.today}
+                searchYear={props.searchYear}
+                searchMonth={props.searchMonth}
 
+                categories={categories}
                 scheduleInfoValueState={scheduleInfoValueState}
                 scheduleEditValueState={scheduleEditValueState}
                 scheduleSortingInfoState={scheduleSortingInfoState}

@@ -1,5 +1,5 @@
 import { Container, HeaderContainer, BodyContainer, CreateBox, ScheduleCategoryBox, CategoryBtn, ScheduleContentBox, ContentInput, ContentAddBtn, ViewBox, BodyWrapper, DataGroupLi, DeleteBtn, DataText, DataTextInput, EditControl, CategorySelect } from "./styles/Body.styled"
-import { dateToYYYYMMDD } from "../../../handler/dateHandler"
+import { dateToYYYYMMDD, getStartDate } from "../../../handler/dateHandler"
 import IconButton from '@material-ui/core/IconButton';
 import CloseIcon from '@material-ui/icons/Close';
 import Checkbox from '@mui/material/Checkbox';
@@ -7,6 +7,8 @@ import DeleteForeverIcon from '@mui/icons-material/DeleteForever';
 import AddCircleIcon from '@mui/icons-material/AddCircle';
 
 export default function DailySchedulerModalBody(props){
+    let isToday = (dateToYYYYMMDD(getStartDate(props.selectedDate)) === dateToYYYYMMDD(props.today))
+
     return (
         <Container>
             <form onSubmit={(e) => props.scheduleSubmit(e)}>
@@ -19,10 +21,10 @@ export default function DailySchedulerModalBody(props){
                     </div>
                 </HeaderContainer>
                 <BodyContainer>
-                    {(props.selectedDateState?.date === props.dateInfoState.todayDate) && (props.dateInfoState.month === props.dateInfoState.today?.getMonth() + 1) && (props.dateInfoState.year === props.dateInfoState.today?.getFullYear()) &&
+                    {isToday &&
                         <CreateBox>
                             <ScheduleCategoryBox>
-                                {props.dailySchedulerCategory?.map((r, index) => {
+                                {props.categories?.map((r, index) => {
                                     return (
                                         <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={props.scheduleInfoValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => props.onChangeScheduleInfoValue(e)} value={r.id}>{r.name}</CategoryBtn>
                                     )
@@ -44,7 +46,7 @@ export default function DailySchedulerModalBody(props){
                             <DataGroupLi className="fixed-header">
                                 <CategorySelect onChange={(e) => props.viewSelectControl().onChangeCategoryValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
                                     <option value='total'>카테고리</option>
-                                    {props.dailySchedulerCategory?.map((r, index) => {
+                                    {props.categories?.map((r, index) => {
                                         return (
                                             <option key={`view_category_idx` + index} value={r.id}>{r.name}</option>
                                         )

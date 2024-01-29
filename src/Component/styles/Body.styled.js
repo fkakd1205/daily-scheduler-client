@@ -96,7 +96,7 @@ export const DateItem = styled.div`
     min-height: 10vh;
     max-height: 10vh;
 
-    &.other-month {
+    &.not-today {
         background-color: #e4e4e4aa;
     }
 

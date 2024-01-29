@@ -1,12 +1,10 @@
 import React, { useEffect, useState, useReducer } from "react";
 
-import CreateDailySchedulerComponent from "../modal/CreateDailySchedulerComponent";
-import DailySchedulerCommonModal from "../modal/DailySchedulerCommonModal";
+import CommonModal from "../modal/CommonModal";
 import DailySchedulerBody from "./DailySchedulerBody";
 import { dailySchedulerCategoryDataConnect } from "../data_connect/dailySchedulerCategoryDataConnect"
 import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataConnect";
 import { getStartDate, getEndDate } from "../handler/dateHandler"
-import SearchMonthlySchedulerComponent from "../modal/SearchMonthlySchedulerComponent";
 import DailySchedulerModalMain from "./modal/daily-scheduler-modal/DailySchedulerModalMain";
 import MonthlySchedulerModalMain from "./modal/monthly-scheduler-modal/MonthlySchedulerModalMain";
 
@@ -14,52 +12,49 @@ const JANUARY = 1;
 const DECEMBER = 12;
 
 const DailySchedulerMain = () => {
-    // Date Info
+    // TODO :: 제거
     const [dateInfoState, dispatchDateInfoState] = useReducer(dateInfoReducer, initialDateInfoState);
-    const [totalDate, setTotalDate] = useState([]);
-
-    const [createDailySchedulerModalOpen, setCreateDailySchedulerModalOpen] = useState(false);
-    const [searchMonthlySchedulerModalOpen, setSearchMonthlySchedulerModalOpen] = useState(false);
-
     const [dailySchedulerCategory, setDailySchedulerCategory] = useState(null);
     const [scheduleInfo, setScheduleInfo] = useState(null);
 
+    const [totalDate, setTotalDate] = useState([]);
+
+    const [dailySchedulerModalOpen, setDailySchedulerModalOpen] = useState(false);
+    const [searchMonthlySchedulerModalOpen, setSearchMonthlySchedulerModalOpen] = useState(false);
+
     const [selectedDateState, dispatchSelectedDateState] = useReducer(selectedDateReducer, initialSelectedDateState)
 
+    const [today, setToday] = useState(null);
+    const [searchYear, setSearchYear] = useState(null)
+    const [searchMonth, setSearchMonth] = useState(null)
+    
+    const[selectedDate, setSelectedDate] = useState(null);
+
     useEffect(() => {
-        if(dateInfoState) {
+        if(today) {
             return;
         }
 
-        // date info setting
-        let date = new Date();
-
-        dispatchDateInfoState({
-            type: 'INIT_DATA',
-            payload: {
-                today: date,
-                year: date.getFullYear(),
-                month: date.getMonth() + 1,
-                todayDate: date.getDate()
-            }
-        });
-    }, []);
+        let d = new Date()
+        setToday(d)
+        setSearchYear(d.getFullYear())
+        setSearchMonth(d.getMonth() + 1)
+    }, [])
 
     useEffect(() => {
-        if(!dateInfoState) {
-            return;
+        if(!searchMonth) {
+            return
         }
 
-        // total date setting
-        setTotalDate(changeSchedulerDate(dateInfoState.month));
-    }, [dateInfoState?.month])
+        changeSchedulerDate()
+    }, [searchMonth])
 
-    const onCreateDailySchedulerModalOpen = () => {
-        setCreateDailySchedulerModalOpen(true);
+    const onDailySchedulerModalOpen = () => {
+        setDailySchedulerModalOpen(true);
     }
 
     const onCreateDailySchedulerModalClose = () => {
-        setCreateDailySchedulerModalOpen(false);
+        setDailySchedulerModalOpen(false);
     }
 
     const onSearchMonthlySchedulerModalOpen = () => {
@@ -69,14 +64,14 @@ const DailySchedulerMain = () => {
     const onSearchMonthlySchedulerModalClose = () => {
         setSearchMonthlySchedulerModalOpen(false);
     }
-    
-    const changeSchedulerDate = (month) => {
-        // day는 0-7까지 반환하며, 0: 일요일, 1: 월요일 ...
-        let lastDayOfPrevMonth = new Date(dateInfoState.year, month - 1, 0).getDay();
-        let lastDateOfPrevMonth = new Date(dateInfoState.year, month - 1, 0).getDate();
 
-        let lastDayOfThisMonth = new Date(dateInfoState.year, month, 0).getDay();
-        let lastDateOfThisMonth = new Date(dateInfoState.year, month, 0).getDate();
+    const changeSchedulerDate = () => {
+        // day는 0-7까지 반환하며, 0: 일요일, 1: 월요일 ...
+        let lastDayOfPrevMonth = new Date(searchYear, searchMonth - 1, 0).getDay();
+        let lastDateOfPrevMonth = new Date(searchYear, searchMonth - 1, 0).getDate();
+
+        let lastDayOfThisMonth = new Date(searchYear, searchMonth, 0).getDay();
+        let lastDateOfThisMonth = new Date(searchYear, searchMonth, 0).getDate();
 
         let prevMonthCalendar = [];
         let thisMonthCalendar = [...Array(lastDateOfThisMonth + 1).keys()].slice(1);
@@ -94,7 +89,8 @@ const DailySchedulerMain = () => {
         }
 
         // prev month, this month, new month의 calendar을 하나의 배열에 저장
-        return prevMonthCalendar.concat(thisMonthCalendar, nextMonthCalendar);
+        let totalCalendar = prevMonthCalendar.concat(thisMonthCalendar, nextMonthCalendar);
+        setTotalDate(totalCalendar)
     }
 
     const changeMonth = () => {
@@ -102,41 +98,21 @@ const DailySchedulerMain = () => {
             moveAndGetPrevMonth: function (e) {
                 e.preventDefault();
 
-                if((dateInfoState.month-1) < 1) {
-                    dispatchDateInfoState({
-                        type: 'SET_DATA',
-                        payload: {
-                            year: dateInfoState.year - 1,
-                            month: DECEMBER
-                        }
-                    })
+                if((searchMonth-1) < 1) {
+                    setSearchYear(searchYear - 1)
+                    setSearchMonth(DECEMBER)
                 }else {
-                    dispatchDateInfoState({
-                        type: 'SET_DATA',
-                        payload: {
-                            month: dateInfoState.month - 1
-                        }
-                    });
+                    setSearchMonth(searchMonth - 1)
                 }
             },
             moveAndGetNextMonth: function(e) {
                 e.preventDefault();
 
-                if((dateInfoState.month + 1) > 12) {
-                    dispatchDateInfoState({
-                        type: 'SET_DATA',
-                        payload: {
-                            year: dateInfoState.year + 1,
-                            month: JANUARY
-                        }
-                    })
+                if((searchMonth + 1) > 12) {
+                    setSearchYear(searchYear + 1)
+                    setSearchMonth(JANUARY)
                 }else {
-                    dispatchDateInfoState({
-                        type: 'SET_DATA',
-                        payload: {
-                            month: dateInfoState.month + 1
-                        }
-                    })
+                    setSearchMonth(searchMonth + 1)
                 }
             }
         }
@@ -147,26 +123,16 @@ const DailySchedulerMain = () => {
             open: function (e, item) {
                 e.preventDefault();
 
-                // 클릭한 날짜
-                let date = new Date(dateInfoState.year, dateInfoState.month-1, item);
-                let startDate = getStartDate(date);
-                let endDate = getEndDate(date);
+                // 선택된 날짜
+                let date = new Date(searchYear, searchMonth-1, item);
+                setSelectedDate(date)
 
-                dispatchSelectedDateState({
-                    type: 'SET_DATA',
-                    payload: {
-                        date: item,
-                        startDate: startDate,
-                        endDate: endDate
-                    }
-                });
-
-                onCreateDailySchedulerModalOpen(true);
+                onDailySchedulerModalOpen(true);
             },
             isToday: function (item) {
-                if((item === dateInfoState.today?.getDate())
-                     && (dateInfoState.month === dateInfoState.today?.getMonth() + 1)
-                     && (dateInfoState.year === dateInfoState.today?.getFullYear())){
+                if((item === today?.getDate())
+                     && (searchMonth === today?.getMonth() + 1)
+                     && (searchYear === today?.getFullYear())){
                         return true;
                 }else {
                     return false;
@@ -191,9 +157,9 @@ const DailySchedulerMain = () => {
                 e.preventDefault();
 
                 // 이번달 1일
-                let firstDate = getStartDate(new Date(dateInfoState.year, dateInfoState.month-1, 1));
+                let firstDate = getStartDate(new Date(searchYear, searchMonth-1, 1));
                 // 다음달 1일의 -1 index
-                let lastDate = getEndDate(new Date(dateInfoState.year, dateInfoState.month-1, totalDate[totalDate.lastIndexOf(1)-1]));
+                let lastDate = getEndDate(new Date(searchYear, searchMonth-1, totalDate[totalDate.lastIndexOf(1)-1]));
 
                 dispatchSelectedDateState({
                     type: 'SET_DATA',
@@ -234,19 +200,19 @@ const DailySchedulerMain = () => {
                         alert(res?.memo);
                     })
             },
-            createSchdule: async function (data) {
-                await dailySchedulerDataConnect().createScheduleContent(data)
-                    .then(res => {
-                        if (res.status === 200 && res.data.message === "success") {
-                            alert('저장되었습니다.');
-                            __dataConnectControl().searchSchduleInfo();
-                        }
-                    })
-                    .catch(err => {
-                        let res = err.response;
-                        alert(res?.memo);
-                    })
-            },
+            // createSchdule: async function (data) {
+            //     await dailySchedulerDataConnect().createScheduleContent(data)
+            //         .then(res => {
+            //             if (res.status === 200 && res.data.message === "success") {
+            //                 alert('저장되었습니다.');
+            //                 __dataConnectControl().searchSchduleInfo();
+            //             }
+            //         })
+            //         .catch(err => {
+            //             let res = err.response;
+            //             alert(res?.memo);
+            //         })
+            // },
             deleteSchedule: async function (scheduleId) {
                 await dailySchedulerDataConnect().deleteScheduleData(scheduleId)
                     .then(res => {
@@ -260,99 +226,76 @@ const DailySchedulerMain = () => {
                         alert(res?.memo);
                     })
             },
-            changeScheduleData: async function (data) {
-                await dailySchedulerDataConnect().changeScheduleData(data)
-                    .then(res => {
-                        if (res.status === 200 && res.data.message === "success") {
-                            __dataConnectControl().searchSchduleInfo();
-                        }
-                    })
-                    .catch(err => {
-                        let res = err.response;
-                        alert(res?.memo);
-                    })
-            },
-            updateScheduleData: async function (data) {
-                await dailySchedulerDataConnect().updateScheduleData(data)
-                    .then(res => {
-                        if (res.status === 200 && res.data.message === "success") {
-                            alert('완료되었습니다.');
-                            __dataConnectControl().searchSchduleInfo();
-                        }
-                    })
-                    .catch(err => {
-                        let res = err.response;
-                        alert(res?.memo);
-                    })
-            }
+            // changeScheduleData: async function (data) {
+            //     await dailySchedulerDataConnect().changeScheduleData(data)
+            //         .then(res => {
+            //             if (res.status === 200 && res.data.message === "success") {
+            //                 __dataConnectControl().searchSchduleInfo();
+            //             }
+            //         })
+            //         .catch(err => {
+            //             let res = err.response;
+            //             alert(res?.memo);
+            //         })
+            // },
+            // updateScheduleData: async function (data) {
+            //     await dailySchedulerDataConnect().updateScheduleData(data)
+            //         .then(res => {
+            //             if (res.status === 200 && res.data.message === "success") {
+            //                 alert('완료되었습니다.');
+            //                 __dataConnectControl().searchSchduleInfo();
+            //             }
+            //         })
+            //         .catch(err => {
+            //             let res = err.response;
+            //             alert(res?.memo);
+            //         })
+            // }
         }
     }
 
     return (
-        dateInfoState &&
-        <div className="schedule-body">
-            <DailySchedulerBody
-                dateInfoState={dateInfoState}
-                totalDate={totalDate}
+        <>
+            <div className="schedule-body">
+                <DailySchedulerBody
+                    searchYear={searchYear}
+                    searchMonth={searchMonth}
+                    totalDate={totalDate}
 
-                schedulerItemControl={() => schedulerItem()}
-                monthlySchedulerControl={() => monthlyScheduler()}
-                changeMonthControl={() => changeMonth()}
-            ></DailySchedulerBody>
+                    schedulerItemControl={() => schedulerItem()}
+                    monthlySchedulerControl={() => monthlyScheduler()}
+                    changeMonthControl={() => changeMonth()}
+                />
+            </div>
 
-            <DailySchedulerCommonModal
-                open={createDailySchedulerModalOpen}
+            {/* 일간 스케쥴러 모달창 */}
+            <CommonModal
+                open={dailySchedulerModalOpen}
                 onClose={() => onCreateDailySchedulerModalClose()}
                 maxWidth={'md'}
                 fullWidth={true}
             >
-                {/* <CreateDailySchedulerComponent
-                    dailySchedulerCategory={dailySchedulerCategory}
-                    scheduleInfo={scheduleInfo}
-                    selectedDateState={selectedDateState}
-                    dateInfoState={dateInfoState}
-
-                    onClose={() => onCreateDailySchedulerModalClose()}
-                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
-                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
-                    scheduleInfoSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
-                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
-                    changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
-                    updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
-                ></CreateDailySchedulerComponent> */}
                 <DailySchedulerModalMain
-                    dailySchedulerCategory={dailySchedulerCategory}
-                    scheduleInfo={scheduleInfo}
-                    selectedDateState={selectedDateState}
-                    dateInfoState={dateInfoState}
+                    today={today}
+                    searchYear={searchYear}
+                    searchMonth={searchMonth}
+                    selectedDate={selectedDate}
 
                     onClose={() => onCreateDailySchedulerModalClose()}
-                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
-                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
-                    scheduleInfoSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
-                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
-                    changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
-                    updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
+                    // scheduleInfoSubmitControl={(data) => __dataConnectControl().createSchdule(data)}
+                    // scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
+                    // changeScheduleDataControl={(data) => __dataConnectControl().changeScheduleData(data)}
+                    // updateScheduleDataControl={(data) => __dataConnectControl().updateScheduleData(data)}
                 />
-            </DailySchedulerCommonModal>
+            </CommonModal>
 
-            <DailySchedulerCommonModal
+            {/* 월간 스케쥴러 모달창 */}
+            <CommonModal
                 open={searchMonthlySchedulerModalOpen}
                 onClose={() => onSearchMonthlySchedulerModalClose()}
                 maxWidth={'md'}
                 fullWidth={true}
             >
-                {/* <SearchMonthlySchedulerComponent
-                    dailySchedulerCategory={dailySchedulerCategory}
-                    scheduleInfo={scheduleInfo}
-                    dateInfoState={dateInfoState}
-
-                    onClose={() => onSearchMonthlySchedulerModalClose()}
-                    searchDailySchedulerCategoryControl={() => __dataConnectControl().searchScheduleCategory()}
-                    searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
-                    scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
-                ></SearchMonthlySchedulerComponent> */}
-
                 <MonthlySchedulerModalMain
                     dailySchedulerCategory={dailySchedulerCategory}
                     scheduleInfo={scheduleInfo}
@@ -363,8 +306,8 @@ const DailySchedulerMain = () => {
                     searchScheduleInfoControl={() => __dataConnectControl().searchSchduleInfo()}
                     scheduleDeleteControl={(scheduleId) => __dataConnectControl().deleteSchedule(scheduleId)}
                 />
-            </DailySchedulerCommonModal>
-        </div>
+            </CommonModal>
+        </>
     )
 }
 
@@ -400,7 +343,6 @@ const dateInfoReducer = (state, action) => {
                 today: action.payload.today ?? state.today,
                 year: action.payload.year ?? state.year,
                 month: action.payload.month ?? state.month,
-                todayDate: action.payload.todayDate ?? state.todayDate
             }
         case 'CLEAR':
             return initialDateInfoState;

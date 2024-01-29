@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { getWeekDayName } from "../utils/dateUtils"
@@ -10,8 +10,8 @@ const DailySchedulerBody = (props) => {
     return (
         <Container>
             <CalendarHead>
-                <span>{props.dateInfoState.year} Daily Scheduler</span>
-                <span>{props.dateInfoState.month} 월</span>
+                <span>{props.searchYear} Daily Scheduler</span>
+                <span>{props.searchMonth} 월</span>
                 <div>
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetPrevMonth(e)}><ArrowBackIcon /></MonthControlBtn>
                     <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
@@ -31,7 +31,7 @@ const DailySchedulerBody = (props) => {
                         return (
                             <DateItem key={'date_item_idx' + index}
                                 onClick={(e) => props.schedulerItemControl().open(e, item)}
-                                className={props.schedulerItemControl().isToday(item) ? 'today' : '' || props.schedulerItemControl().isThisMonthDate(index) ? '' : 'other-month'}
+                                className={props.schedulerItemControl().isToday(item) ? 'today' : '' || props.schedulerItemControl().isThisMonthDate(index) ? '' : 'not-today'}
                             >
                                 <span>{item}</span>
                             </DateItem>

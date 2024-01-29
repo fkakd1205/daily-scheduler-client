@@ -1,7 +1,7 @@
 import { Dialog } from "@material-ui/core";
 import PropTypes from 'prop-types';
 
-const DailySchedulerCommonModal = (props) => {
+const CommonModal = (props) => {
     return (
         <>
             <Dialog
@@ -17,11 +17,11 @@ const DailySchedulerCommonModal = (props) => {
     )
 }
 
-DailySchedulerCommonModal.propTypes = {
+CommonModal.propTypes = {
     open: PropTypes.bool.isRequired,
     onClose: PropTypes.func,
     maxWidth: PropTypes.string,
     fullWidth: PropTypes.bool
 }
 
-export default DailySchedulerCommonModal;
+export default CommonModal;
