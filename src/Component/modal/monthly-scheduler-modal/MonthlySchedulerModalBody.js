@@ -26,7 +26,7 @@ export default function MonthlySchedulerModalBody(props) {
         <Container>
             <HeaderContainer>
                 <div className="header-top">
-                        <div className="modal-title">{props.dateInfoState.month}월 진행률</div>
+                        <div className="modal-title">{props.searchMonth}월 진행률</div>
                         <IconButton className="modal-close-btn" aria-label="close" onClick={(e) => props.onCloseModal(e)}>
                             <CloseIcon />
                         </IconButton>
@@ -40,7 +40,7 @@ export default function MonthlySchedulerModalBody(props) {
                 <DataGroup className="fixed-header">
                     <CategorySelect onChange={(e) => props.viewSelectControl().onChangeCategoryValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
                         <option value='total'>카테고리</option>
-                        {props.dailySchedulerCategory?.map((r, index) => {
+                        {props.categories?.map((r, index) => {
                             return (
                                 <option key={`view_category_idx` + index} value={r.id}>{r.name}</option>
                             )
@@ -55,7 +55,7 @@ export default function MonthlySchedulerModalBody(props) {
                     <DataText>등록일</DataText>
                     <DataText>완료일</DataText>
                 </DataGroup>
-                {props.scheduleValueState?.map((r, index) => {
+                {props.schedules?.map((r, index) => {
                     return (
                         <DataGroup key={`scheduler_info_idx` + index}>
                             <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>

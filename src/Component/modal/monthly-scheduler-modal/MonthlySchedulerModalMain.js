@@ -1,16 +1,20 @@
 import { useEffect, useReducer, useState } from "react";
 import MonthlySchedulerModalBody from "./MonthlySchedulerModalBody";
+import { dailySchedulerCategoryDataConnect } from "../../../data_connect/dailySchedulerCategoryDataConnect";
+import { dailySchedulerDataConnect } from "../../../data_connect/dailySchedulerDataConnect";
+import { getEndDate, getStartDate } from "../../../handler/dateHandler";
 
 export default function MonthlySchedulerModalMain(props) {
-    const [scheduleValueState, dispatchScheduleValueState] = useReducer(scheduleValueStateReducer, initialScheduleValueState);
     const [scheduleSortingInfoState, dispatchScheduleSortingInfoState] = useReducer(scheduleSortingInfoReducer, initialScheduleSortingInfo);
     const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
     const [progressionRate, setProgressionRate] = useState(0);
 
+    const [categories, setCategories] = useState(null);
+    const [schedules, setSchedules] = useState(null);
+
     useEffect(() => {
         async function getInitData() {
-            await props.searchDailySchedulerCategoryControl();
-            await props.searchScheduleInfoControl();
+            await __dataConnectControl().searchCategories()
 
             // 기본 카테고리 select 선택
             dispatchScheduleSortingInfoState({
@@ -22,52 +26,59 @@ export default function MonthlySchedulerModalMain(props) {
     }, [])
 
     useEffect(() => {
-        function initSchedule() {
-            if(!props.scheduleInfo) {
-                return;
-            }
-
-            dispatchScheduleValueState({
-                type: 'INIT_DATA',
-                payload: props.scheduleInfo
-            });
+        async function getDailySchedule(startDate, endDate) {
+            await __dataConnectControl().searchSchedules(startDate, endDate)
         }
-        initSchedule();
-    }, [props.scheduleInfo]);
+
+        if(!(props.searchYear && props.searchMonth && props.totalDate)) {
+            return;
+        }
+
+        let firstDate = new Date(props.searchYear, props.searchMonth-1, 1);
+        let lastDate = new Date(props.searchYear, props.searchMonth-1, props.totalDate[props.totalDate.lastIndexOf(1)-1]);
+
+        // 이번달 1일
+        let startDate = getStartDate(firstDate);
+        // 다음달 1일의 -1 index
+        let endDate = getEndDate(lastDate);
+
+
+        getDailySchedule(startDate, endDate)
+    }, [props.searchYear, props.searchMonth, props.totalDate])
 
     useEffect(() => {
-        function getCompletedSchedule() {
-            if(!props.scheduleInfo) {
-                return;
-            }
-            
-            let completedIdList = props.scheduleInfo.filter(r => r.completed).map(r => r.id);
+        function getCompletedSchedule() {            
+            let completedIdList = schedules.filter(r => r.completed).map(r => r.id);
             if(completedIdList) {
                 setCompletedScheduleInfoList(completedIdList);
             }
 
             // 진행률
             let rate = 0;
-            if(props.scheduleInfo.length !== 0){
-                rate = Math.round((completedIdList.length / props.scheduleInfo.length) * 100);
+            if(schedules.length !== 0){
+                rate = Math.round((completedIdList.length / schedules.length) * 100);
             }
             setProgressionRate(rate);
         }
 
+        if(!schedules) {
+            return;
+        }
+
         getCompletedSchedule();
-    }, [props.scheduleInfo]);
+    }, [schedules]);
 
     // 선택된 카테고리로 스케쥴 조회
     useEffect(() => {
         function changeSort() {
-            if(!(scheduleSortingInfoState && props.scheduleInfo)) {
+            if(!(scheduleSortingInfoState && schedules)) {
                 return;
             }
 
             viewSelectControl().changeViewData();
         }
         changeSort();
-    }, [scheduleSortingInfoState, props.scheduleInfo])
+    }, [scheduleSortingInfoState, schedules])
 
     const onCloseModal = (e) => {
         e.preventDefault();
@@ -105,7 +116,7 @@ export default function MonthlySchedulerModalMain(props) {
                 });
             },
             changeViewData: function () {
-                let newData = props.scheduleInfo;
+                let newData = [...schedules];
 
                 if (scheduleSortingInfoState?.categoryId !== 'total') {
                     newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
@@ -115,27 +126,53 @@ export default function MonthlySchedulerModalMain(props) {
                     newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
                 }
 
-                dispatchScheduleValueState({
-                    type: 'INIT_DATA',
-                    payload: newData
-                });
+                setSchedules(newData)
             }
         }
     }
 
     const convertCategoryName = (categoryId) => {
-        return props.dailySchedulerCategory?.filter(r => r.id === categoryId)[0].name;
+        return categories?.filter(r => r.id === categoryId)[0].name;
+    }
+
+    const __dataConnectControl = () => {
+        return {
+            searchCategories: async function () {
+                await dailySchedulerCategoryDataConnect().searchDailySchedulerCategory()
+                    .then(res => {
+                        if(res.status === 200 && res.data.message === "success") {
+                            setCategories(res.data.data)
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            },
+            searchSchedules: async function (startDate, endDate) {
+                await dailySchedulerDataConnect().searchScheduleInfoByDate(startDate, endDate)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            setSchedules(res.data.data);
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            }
+        }
     }
 
     return (
         <>
             <MonthlySchedulerModalBody
-                scheduleValueState={scheduleValueState}
                 scheduleSortingInfoState={scheduleSortingInfoState}
                 progressionRate={progressionRate}
 
-                dateInfoState={props.dateInfoState}
-                dailySchedulerCategory={props.dailySchedulerCategory}
+                searchMonth={props.searchMonth}
+                categories={categories}
+                schedules={schedules}
 
                 onCloseModal={onCloseModal}
                 viewSelectControl={viewSelectControl}
@@ -146,20 +183,7 @@ export default function MonthlySchedulerModalMain(props) {
     )
 }
 
-const initialScheduleValueState = null;
 const initialScheduleSortingInfo = null;
-
-const scheduleValueStateReducer = (state, action) => {
-    switch (action.type) {
-        case 'INIT_DATA': 
-            return action.payload;
-        case 'SET_DATA': 
-            return action.payload;
-        case 'CLEAR':
-            return null;
-        default: return { ...state }
-    }
-}
 
 const scheduleSortingInfoReducer = (state, action) => {
     switch (action.type) {

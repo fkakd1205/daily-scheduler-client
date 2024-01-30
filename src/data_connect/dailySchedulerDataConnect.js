@@ -10,7 +10,7 @@ const dailySchedulerDataConnect = () => {
                 // withCredentials: true
             });
         },
-        searchSchduleInfoByDate: async function (startDate, endDate) {
+        searchScheduleInfoByDate: async function (startDate, endDate) {
             return await axios.get(`${API_SERVER_ADDRESS}/api/v1/schedules/date`, {
                 params : {
                     startDate : startDate,

@@ -46,7 +46,6 @@ export default function DailySchedulerModalMain(props) {
 
     useEffect(() => {
         function initSchedule() {
-            console.log(schedules)
             dispatchScheduleEditValueState({
                 type: 'INIT_DATA',
                 payload: schedules
@@ -113,7 +112,6 @@ export default function DailySchedulerModalMain(props) {
             return;
         }
 
-        // await props.scheduleInfoSubmitControl(scheduleInfoValueState);
         let date = props.selectedDate
         let startDate = getStartDate(date);
         let endDate = getEndDate(date);
@@ -257,7 +255,6 @@ export default function DailySchedulerModalMain(props) {
         e.preventDefault();
 
         if(window.confirm('정말 삭제하시겠습니다?')){
-            // await props.scheduleDeleteControl(sheduleId);
             let date = props.selectedDate
             let startDate = getStartDate(date);
             let endDate = getEndDate(date);
@@ -298,7 +295,7 @@ export default function DailySchedulerModalMain(props) {
                     })
             },
             searchSchedules: async function (startDate, endDate) {
-                await dailySchedulerDataConnect().searchSchduleInfoByDate(startDate, endDate)
+                await dailySchedulerDataConnect().searchScheduleInfoByDate(startDate, endDate)
                     .then(res => {
                         if (res.status === 200 && res.data.message === "success") {
                             setSchedules(res.data.data);

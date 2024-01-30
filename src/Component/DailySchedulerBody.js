@@ -13,8 +13,8 @@ const DailySchedulerBody = (props) => {
                 <span>{props.searchYear} Daily Scheduler</span>
                 <span>{props.searchMonth} 월</span>
                 <div>
-                    <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetPrevMonth(e)}><ArrowBackIcon /></MonthControlBtn>
-                    <MonthControlBtn onClick={(e) => props.changeMonthControl().moveAndGetNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
+                    <MonthControlBtn onClick={(e) => props.handleChangePrevMonth(e)}><ArrowBackIcon /></MonthControlBtn>
+                    <MonthControlBtn onClick={(e) => props.handleChangeNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
                 </div>
             </CalendarHead>
 
@@ -30,8 +30,8 @@ const DailySchedulerBody = (props) => {
                     {props.totalDate?.map((item, index) => {
                         return (
                             <DateItem key={'date_item_idx' + index}
-                                onClick={(e) => props.schedulerItemControl().open(e, item)}
-                                className={props.schedulerItemControl().isToday(item) ? 'today' : '' || props.schedulerItemControl().isThisMonthDate(index) ? '' : 'not-today'}
+                                onClick={(e) => props.handleDailyModalOpen(e, item)}
+                                className={props.isToday(item) ? 'today' : '' || props.isThisMonthDate(index) ? '' : 'not-today'}
                             >
                                 <span>{item}</span>
                             </DateItem>
@@ -41,7 +41,7 @@ const DailySchedulerBody = (props) => {
             </CalendarBody>
 
             <CalendarFooter>
-                <button onClick={(e) => props.monthlySchedulerControl().open(e)}>
+                <button onClick={(e) => props.handleMonthlyModalOpen(e)}>
                     월별 진행률
                 </button>
             </CalendarFooter>
