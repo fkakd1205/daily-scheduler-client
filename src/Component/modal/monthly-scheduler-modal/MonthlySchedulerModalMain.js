@@ -138,7 +138,7 @@ export default function MonthlySchedulerModalMain(props) {
     const __dataConnectControl = () => {
         return {
             searchCategories: async function () {
-                await dailySchedulerCategoryDataConnect().searchDailySchedulerCategory()
+                await dailySchedulerCategoryDataConnect().searchDailySchedulerCategoryAll()
                     .then(res => {
                         if(res.status === 200 && res.data.message === "success") {
                             setCategories(res.data.data)
