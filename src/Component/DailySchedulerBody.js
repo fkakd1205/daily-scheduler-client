@@ -28,10 +28,12 @@ const DailySchedulerBody = (props) => {
                 </DayInfo>
                 <DateBody>
                     {props.totalDate?.map((item, index) => {
+                        let isThisMonth = props.isThisMonthDate(index)
+                        
                         return (
                             <DateItem key={'date_item_idx' + index}
                                 onClick={(e) => props.handleDailyModalOpen(e, item)}
-                                className={props.isToday(item) ? 'today' : '' || props.isThisMonthDate(index) ? '' : 'not-today'}
+                                className={`${(isThisMonth && props.isTodayDate(item)) ? 'today' : ''} ${isThisMonth ? '' : 'other-month-date'}`}
                             >
                                 <span>{item}</span>
                             </DateItem>

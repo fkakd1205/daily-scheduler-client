@@ -114,7 +114,7 @@ export default function DailySchedulerMain() {
         handleDailySchedulerModalOpen(true);
     }
 
-    const isToday = (item) => {
+    const isTodayDate = (item) => {
         if((item === today?.getDate()) && (searchMonth === today?.getMonth() + 1) && (searchYear === today?.getFullYear())){
             return true;
         }else {
@@ -148,7 +148,7 @@ export default function DailySchedulerMain() {
                     totalDate={totalDate}
 
                     handleDailyModalOpen={handleDailyModalOpen}
-                    isToday={isToday}
+                    isTodayDate={isTodayDate}
                     isThisMonthDate={isThisMonthDate}
                     handleMonthlyModalOpen={handleMonthlyModalOpen}
 
