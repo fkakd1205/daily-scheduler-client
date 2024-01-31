@@ -180,7 +180,7 @@ export default function DailySchedulerModalMain(props) {
                     let startDate = getStartDate(date);
                     let endDate = getEndDate(date);
 
-                    await __dataConnectControl().changeScheduleData(data);
+                    await __dataConnectControl().cancelCompletedSchedule(data);
                     await __dataConnectControl().searchSchedules(startDate, endDate)
                 }
             }
@@ -276,7 +276,7 @@ export default function DailySchedulerModalMain(props) {
         let startDate = getStartDate(date);
         let endDate = getEndDate(date);
 
-        await __dataConnectControl().updateScheduleData(scheduleEditValueState);
+        await __dataConnectControl().updateScheduleList(scheduleEditValueState);
         await __dataConnectControl().searchSchedules(startDate, endDate)
     }
 
@@ -319,7 +319,7 @@ export default function DailySchedulerModalMain(props) {
                     })
             },
             deleteSchedule: async function (scheduleId) {
-                await dailySchedulerDataConnect().deleteScheduleData(scheduleId)
+                await dailySchedulerDataConnect().deleteSchedule(scheduleId)
                     .then(res => {
                         if (res.status === 200 && res.data.message === "success") {
                             alert('삭제되었습니다.');
@@ -330,15 +330,15 @@ export default function DailySchedulerModalMain(props) {
                         alert(res?.memo);
                     })
             },
-            changeScheduleData: async function (data) {
-                await dailySchedulerDataConnect().changeScheduleData(data)
+            cancelCompletedSchedule: async function (data) {
+                await dailySchedulerDataConnect().cancelCompletedSchedule(data)
                     .catch(err => {
                         let res = err.response;
                         alert(res?.memo);
                     })
             },
-            updateScheduleData: async function (data) {
-                await dailySchedulerDataConnect().updateScheduleData(data)
+            updateScheduleList: async function (data) {
+                await dailySchedulerDataConnect().updateScheduleList(data)
                     .then(res => {
                         if (res.status === 200 && res.data.message === "success") {
                             alert('완료되었습니다.');

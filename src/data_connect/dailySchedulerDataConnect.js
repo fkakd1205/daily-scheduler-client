@@ -18,16 +18,16 @@ const dailySchedulerDataConnect = () => {
                 }
             });
         },
-        deleteScheduleData: async function (scheduleId) {
+        deleteSchedule: async function (scheduleId) {
             return await axios.delete(`${API_SERVER_ADDRESS}/api/v1/schedules/${scheduleId}`, {
             });
         },
-        changeScheduleData: async function (data) {
-            return await axios.patch(`${API_SERVER_ADDRESS}/api/v1/schedules`, data, {
+        cancelCompletedSchedule: async function (data) {
+            return await axios.patch(`${API_SERVER_ADDRESS}/api/v1/schedules/completed-cancel`, data, {
             });
         },
-        updateScheduleData: async function (data) {
-            return await axios.put(`${API_SERVER_ADDRESS}/api/v1/schedules`, data, {
+        updateScheduleList: async function (data) {
+            return await axios.put(`${API_SERVER_ADDRESS}/api/v1/schedules/batch`, data, {
             });
         }
     }

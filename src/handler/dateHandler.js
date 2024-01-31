@@ -1,8 +1,8 @@
 import moment from 'moment';
 
-function dateToYYYYMMDDhhmm(date) {
+function dateToYYYYMMDDhhmmss(date) {
     var changeDate = new Date(date);
-    return moment(changeDate).format("YYYY.MM.DD HH:mm");
+    return moment(changeDate).format("YYYY.MM.DD HH:mm:ss");
 }
 
 function dateToYYYYMMDD(date) {
@@ -15,7 +15,7 @@ function getStartDate(date) {
     startDate.setHours(0);
     startDate.setMinutes(0);
     startDate.setSeconds(0);
-    return dateToYYYYMMDDhhmm(startDate);
+    return dateToYYYYMMDDhhmmss(startDate);
 }
 
 function getEndDate(date) {
@@ -23,11 +23,11 @@ function getEndDate(date) {
     endDate.setHours(23);
     endDate.setMinutes(59);
     endDate.setSeconds(59);
-    return dateToYYYYMMDDhhmm(endDate);
+    return dateToYYYYMMDDhhmmss(endDate);
 }
 
 export {
-    dateToYYYYMMDDhhmm,
+    dateToYYYYMMDDhhmmss,
     dateToYYYYMMDD,
     getStartDate,
     getEndDate
