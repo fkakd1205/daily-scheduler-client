@@ -5,10 +5,9 @@ import { dailySchedulerDataConnect } from "../../../data_connect/dailySchedulerD
 import { getEndDate, getStartDate } from "../../../handler/dateHandler";
 
 export default function DailySchedulerModalMain(props) {
-    const [scheduleInfoValueState, dispatchScheduleInfoValueState] = useReducer(scheduleInfoValueStateReducer, initialScheduleInfoValueState);
+    const [scheduleInputValueState, dispatchScheduleInputValueState] = useReducer(scheduleInputValueStateReducer, initialScheduleInputValueState);
     const [scheduleEditValueState, dispatchScheduleEditValueState] = useReducer(scheduleEditValueStateReducer, initialScheduleEditValueState);
     const [scheduleSortingInfoState, dispatchScheduleSortingInfoState] = useReducer(scheduleSortingInfoReducer, initialScheduleSortingInfo);
-
     const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
     const [checkedScheduleInfoList, setCheckedScheduleInfoList] = useState([]);
 
@@ -51,15 +50,7 @@ export default function DailySchedulerModalMain(props) {
                 payload: schedules
             });
         }
-        
-        if(!schedules) {
-            return;
-        }
 
-        initSchedule();
-    }, [schedules]);
-
-    useEffect(() => {
         function getCompletedSchedule() {
             if(!schedules) {
                 return;
@@ -72,6 +63,11 @@ export default function DailySchedulerModalMain(props) {
             }
         }
 
+        if(!schedules) {
+            return;
+        }
+
+        initSchedule();
         getCompletedSchedule();
     }, [schedules]);
 
@@ -95,7 +91,7 @@ export default function DailySchedulerModalMain(props) {
     const onChangeScheduleInfoValue = (e) => {
         e.preventDefault();
 
-        dispatchScheduleInfoValueState({
+        dispatchScheduleInputValueState({
             type: 'SET_DATA',
             payload: {
                 name : e.target.name,
@@ -107,7 +103,7 @@ export default function DailySchedulerModalMain(props) {
     const scheduleSubmit = async (e) => {
         e.preventDefault();
 
-        if(!scheduleInfoValueState.categoryId){
+        if(!scheduleInputValueState.categoryId){
             alert('카테고리를 선택해주세요.')
             return;
         }
@@ -116,10 +112,10 @@ export default function DailySchedulerModalMain(props) {
         let startDate = getStartDate(date);
         let endDate = getEndDate(date);
 
-        await __dataConnectControl().createSchdule(scheduleInfoValueState);
+        await __dataConnectControl().createSchdule(scheduleInputValueState);
         await __dataConnectControl().searchSchedules(startDate, endDate);
 
-        dispatchScheduleInfoValueState({
+        dispatchScheduleInputValueState({
             type: 'CLEAR'
         });
     }
@@ -136,53 +132,34 @@ export default function DailySchedulerModalMain(props) {
             isCompleted: function (scheduleId) {
                 return completedScheduleInfoList?.includes(scheduleId);
             },
-            checkOne: function (e, scheduleId) {
+            checkOne: async function (e, scheduleId) {
+                e.preventDefault();
+                let data = {
+                    id: scheduleId
+                }
+
                 if(e.target.checked) {
-                    setCheckedScheduleInfoList(checkedScheduleInfoList.concat(scheduleId));
-
-                    let newData = scheduleEditValueState?.map(r => {
-                        if(r.id === scheduleId){
-                            r.completed = true;
+                    if (window.confirm('완료처리 하시겠습니까?')) {
+                        data = {
+                            ...data,
+                            completed: true
                         }
-                        return r;
-                    });
-
-                    dispatchScheduleEditValueState({
-                        type: 'SET_DATA',
-                        payload: newData
-                    });
-
-                } else {
-                    setCheckedScheduleInfoList(checkedScheduleInfoList.filter(r => r !== scheduleId));
-
-                    let newData = scheduleEditValueState?.map(r => {
-                        if(r.id === scheduleId){
-                            r.completed = false;
-                        }
-                        return r;
-                    });
-
-
-                    dispatchScheduleEditValueState({
-                        type: 'SET_DATA',
-                        payload: newData
-                    });
-                }
-            },
-            cancelOne: async function (scheduleId) {
-                if (window.confirm('정말 취소하시겠습니까?')) {
-                    let data = {
-                        id: scheduleId,
-                        completed: false
                     }
-
-                    let date = props.selectedDate
-                    let startDate = getStartDate(date);
-                    let endDate = getEndDate(date);
-
-                    await __dataConnectControl().cancelCompletedSchedule(data);
-                    await __dataConnectControl().searchSchedules(startDate, endDate)
+                } else {
+                    if (window.confirm('정말 취소하시겠습니까?')) {
+                        data = {
+                            ...data,
+                            completed: false
+                        }
+                    }
                 }
+
+                let date = props.selectedDate;
+                let startDate = getStartDate(date);
+                let endDate = getEndDate(date);
+    
+                await __dataConnectControl().updateCompletedSchedule(data);
+                await __dataConnectControl().searchSchedules(startDate, endDate);
             }
         }
     }
@@ -330,8 +307,8 @@ export default function DailySchedulerModalMain(props) {
                         alert(res?.memo);
                     })
             },
-            cancelCompletedSchedule: async function (data) {
-                await dailySchedulerDataConnect().cancelCompletedSchedule(data)
+            updateCompletedSchedule: async function (data) {
+                await dailySchedulerDataConnect().updateCompletedSchedule(data)
                     .catch(err => {
                         let res = err.response;
                         alert(res?.memo);
@@ -361,7 +338,7 @@ export default function DailySchedulerModalMain(props) {
                 searchMonth={props.searchMonth}
 
                 categories={categories}
-                scheduleInfoValueState={scheduleInfoValueState}
+                scheduleInputValueState={scheduleInputValueState}
                 scheduleEditValueState={scheduleEditValueState}
                 scheduleSortingInfoState={scheduleSortingInfoState}
 
@@ -379,11 +356,11 @@ export default function DailySchedulerModalMain(props) {
     )    
 }
 
-const initialScheduleInfoValueState = null;
+const initialScheduleInputValueState = null;
 const initialScheduleEditValueState = null;
 const initialScheduleSortingInfo = null;
 
-const scheduleInfoValueStateReducer =  (state, action) => {
+const scheduleInputValueStateReducer =  (state, action) => {
     switch (action.type) {
         case 'INIT_DATA': 
             return action.payload;

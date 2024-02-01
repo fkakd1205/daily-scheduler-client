@@ -22,8 +22,8 @@ const dailySchedulerDataConnect = () => {
             return await axios.delete(`${API_SERVER_ADDRESS}/api/v1/schedules/${scheduleId}`, {
             });
         },
-        cancelCompletedSchedule: async function (data) {
-            return await axios.patch(`${API_SERVER_ADDRESS}/api/v1/schedules/completed-cancel`, data, {
+        updateCompletedSchedule: async function (data) {
+            return await axios.patch(`${API_SERVER_ADDRESS}/api/v1/schedules/completed`, data, {
             });
         },
         updateScheduleList: async function (data) {

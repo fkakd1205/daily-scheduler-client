@@ -26,12 +26,12 @@ export default function DailySchedulerModalBody(props){
                             <ScheduleCategoryBox>
                                 {props.categories?.map((r, index) => {
                                     return (
-                                        <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={props.scheduleInfoValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => props.onChangeScheduleInfoValue(e)} value={r.id}>{r.name}</CategoryBtn>
+                                        <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={props.scheduleInputValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => props.onChangeScheduleInfoValue(e)} value={r.id}>{r.name}</CategoryBtn>
                                     )
                                 })}
                             </ScheduleCategoryBox>
                             <ScheduleContentBox>
-                                <ContentInput type="text" name="content" onChange={(e) => props.onChangeScheduleInfoValue(e)} value={props.scheduleInfoValueState?.content || ''} required></ContentInput>
+                                <ContentInput type="text" name="content" onChange={(e) => props.onChangeScheduleInfoValue(e)} value={props.scheduleInputValueState?.content || ''} required></ContentInput>
                                 <ContentAddBtn type="submit"><AddCircleIcon fontSize="large" /></ContentAddBtn>
                             </ScheduleContentBox>
                         </CreateBox>
@@ -68,10 +68,7 @@ export default function DailySchedulerModalBody(props){
                                         <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>
                                         <DataText>
                                             <Checkbox
-                                                onClick={props.scheduleStatusControl().isCompleted(r.id) ?
-                                                    () => props.scheduleStatusControl().cancelOne(r.id)
-                                                    :
-                                                    (e) => props.scheduleStatusControl().checkOne(e, r.id)}
+                                                onClick={(e) => props.scheduleStatusControl().checkOne(e, r.id)}
                                                 checked={props.scheduleStatusControl().isChecked(r.id)}
                                             />
                                         </DataText>
