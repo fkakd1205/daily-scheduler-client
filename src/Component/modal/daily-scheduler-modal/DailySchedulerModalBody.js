@@ -44,7 +44,11 @@ export default function DailySchedulerModalBody(props){
                     <ViewBox>
                         <BodyWrapper>
                             <DataGroupLi className="fixed-header">
-                                <CategorySelect onChange={(e) => props.viewSelectControl().onChangeCategoryValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
+                                <CategorySelect
+                                    name='categoryId'    
+                                    onChange={(e) => props.handleChangeSortingValue(e)}
+                                    value={props.scheduleSortingInfoState?.categoryId}
+                                >
                                     <option value='total'>카테고리</option>
                                     {props.categories?.map((r, index) => {
                                         return (
@@ -52,7 +56,11 @@ export default function DailySchedulerModalBody(props){
                                         )
                                     })}
                                 </CategorySelect>
-                                <CategorySelect onChange={(e) => props.viewSelectControl().onChangeCompletedValue(e)} value={props.scheduleSortingInfoState?.completed}>
+                                <CategorySelect 
+                                    name='completed'
+                                    onChange={(e) => props.handleChangeSortingValue(e)}
+                                    value={props.scheduleSortingInfoState?.completed}
+                                >
                                     <option value='total'>완료여부</option>
                                     <option value={true}>완료</option>
                                     <option value={false}>미완료</option>
@@ -68,11 +76,11 @@ export default function DailySchedulerModalBody(props){
                                         <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>
                                         <DataText>
                                             <Checkbox
-                                                onClick={(e) => props.scheduleStatusControl().checkOne(e, r.id)}
-                                                checked={props.scheduleStatusControl().isChecked(r.id)}
+                                                onClick={(e) => props.handleCheckOne(e, r.id)}
+                                                checked={props.isChecked(r.id)}
                                             />
                                         </DataText>
-                                        <DataTextInput name="content" value={r.content || ''} onChange={(e) => props.scheduleEditControl().onChangeInputValue(e, r.id)}></DataTextInput>
+                                        <DataTextInput name="content" value={r.content || ''} onChange={(e) => props.handleChangeScheduleEditValue(e, r.id)}></DataTextInput>
                                         <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
                                         <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
                                         <DeleteBtn onClick={(e) => props.scheduleContentDelete(e, r.id)}><DeleteForeverIcon /></DeleteBtn>

@@ -78,7 +78,7 @@ export default function DailySchedulerModalMain(props) {
                 return;
             }
 
-            viewSelectControl().changeViewData();
+            handleChangeSortingView()
         }
         changeSort();
     }, [scheduleSortingInfoState, schedules])
@@ -124,108 +124,82 @@ export default function DailySchedulerModalMain(props) {
         return categories?.filter(r => r.id === categoryId)[0].name;
     }
 
-    const scheduleStatusControl = () => {
-        return {
-            isChecked: function (scheduleId) {
-                return checkedScheduleInfoList?.includes(scheduleId);
-            },
-            isCompleted: function (scheduleId) {
-                return completedScheduleInfoList?.includes(scheduleId);
-            },
-            checkOne: async function (e, scheduleId) {
-                e.preventDefault();
-                let data = {
-                    id: scheduleId
-                }
-
-                if(e.target.checked) {
-                    if (window.confirm('완료처리 하시겠습니까?')) {
-                        data = {
-                            ...data,
-                            completed: true
-                        }
-                    }
-                } else {
-                    if (window.confirm('정말 취소하시겠습니까?')) {
-                        data = {
-                            ...data,
-                            completed: false
-                        }
-                    }
-                }
-
-                let date = props.selectedDate;
-                let startDate = getStartDate(date);
-                let endDate = getEndDate(date);
-    
-                await __dataConnectControl().updateCompletedSchedule(data);
-                await __dataConnectControl().searchSchedules(startDate, endDate);
-            }
-        }
+    const isChecked = (scheduleId) => {
+        return checkedScheduleInfoList?.includes(scheduleId);
     }
 
-    const scheduleEditControl = () => {
-        return {
-            onChangeInputValue: function(e, scheduleId) {
+    const handleCheckOne = async (e, scheduleId) => {
+        e.preventDefault();
+        let completed = false
 
-                let newData = scheduleEditValueState?.map(r => {
-                    if(r.id === scheduleId){
-                        r = {
-                            ...r,
-                            [e.target.name] : e.target.value
-                        }
-                    }
-                    
-                    return r;
-                });
-
-                dispatchScheduleEditValueState({
-                    type : 'SET_DATA',
-                    payload: newData
-                });
+        if (e.target.checked) {
+            if (!window.confirm('완료처리 하시겠습니까?')) {
+                return;
+            }
+            completed = true
+        } else {
+            if (!window.confirm('정말 취소하시겠습니까?')) {
+                return;
             }
         }
+
+        let data = {
+            id: scheduleId,
+            completed
+        }
+
+        let date = props.selectedDate;
+        let startDate = getStartDate(date);
+        let endDate = getEndDate(date);
+
+        await __dataConnectControl().updateCompletedSchedule(data);
+        await __dataConnectControl().searchSchedules(startDate, endDate);
     }
 
-    const viewSelectControl = () => {
-        return {
-            onChangeCategoryValue: function (e) {
-                let target = e.target.value;
-
-                dispatchScheduleSortingInfoState({
-                    type: 'SET_DATA',
-                    payload: {
-                        categoryId: target
-                    }
-                });
-            },
-            onChangeCompletedValue: function (e) {
-                let target = e.target.value;
-
-                dispatchScheduleSortingInfoState({
-                    type: 'SET_DATA',
-                    payload: {
-                        completed: target
-                    }
-                });
-            },
-            changeViewData: function () {
-                let newData = schedules;
-
-                if(scheduleSortingInfoState?.categoryId !== 'total') {
-                    newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
+    const handleChangeScheduleEditValue = (e, scheduleId) => {
+        let newData = scheduleEditValueState?.map(r => {
+            if(r.id === scheduleId){
+                r = {
+                    ...r,
+                    [e.target.name] : e.target.value
                 }
-
-                if(scheduleSortingInfoState?.completed !== 'total') {
-                    newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
-                }
-
-                dispatchScheduleEditValueState({
-                    type: 'INIT_DATA',
-                    payload: newData
-                });
             }
+            
+            return r;
+        });
+
+        dispatchScheduleEditValueState({
+            type : 'SET_DATA',
+            payload: newData
+        });
+    }
+
+    const handleChangeSortingValue = (e) => {
+        let value = e.target.value;
+
+        dispatchScheduleSortingInfoState({
+            type: 'SET_DATA',
+            payload: {
+                [e.target.name]: value
+            }
+        });
+    }
+
+    const handleChangeSortingView = () => {
+        let newData = schedules;
+
+        if (scheduleSortingInfoState?.categoryId !== 'total') {
+            newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
         }
+
+        if (scheduleSortingInfoState?.completed !== 'total') {
+            newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
+        }
+
+        dispatchScheduleEditValueState({
+            type: 'INIT_DATA',
+            payload: newData
+        });
     }
 
     const scheduleContentDelete = async (e, sheduleId) => {
@@ -346,10 +320,11 @@ export default function DailySchedulerModalMain(props) {
                 onCloseModal={onCloseModal}
                 onChangeScheduleInfoValue={onChangeScheduleInfoValue}
                 updateSchedule={updateSchedule}
-                viewSelectControl={viewSelectControl}
                 convertCategoryName={convertCategoryName}
-                scheduleStatusControl={scheduleStatusControl}
-                scheduleEditControl={scheduleEditControl}
+                isChecked={isChecked}
+                handleCheckOne={handleCheckOne}
+                handleChangeSortingValue={handleChangeSortingValue}
+                handleChangeScheduleEditValue={handleChangeScheduleEditValue}
                 scheduleContentDelete={scheduleContentDelete}
             />
         </>

@@ -75,7 +75,7 @@ export default function MonthlySchedulerModalMain(props) {
                 return;
             }
 
-            viewSelectControl().changeViewData();
+            handleChangeSortingView();
         }
         changeSort();
     }, [scheduleSortingInfoState, schedules])
@@ -85,50 +85,33 @@ export default function MonthlySchedulerModalMain(props) {
         props.onClose();
     }
 
-    const scheduleStatusControl = () => {
-        return {
-            isCompleted: function (scheduleId) {
-                return completedScheduleInfoList?.includes(scheduleId);
-            }
-        }
+    const isCompleted = (scheduleId) => {
+        return completedScheduleInfoList?.includes(scheduleId);
     }
 
-    const viewSelectControl = () => {
-        return {
-            onChangeCategoryValue: function (e) {
-                let target = e.target.value;
+    const handleChangeSortingValue = (e) => {
+        let value = e.target.value;
 
-                dispatchScheduleSortingInfoState({
-                    type: 'SET_DATA',
-                    payload: {
-                        categoryId: target
-                    }
-                });
-            },
-            onChangeCompletedValue: function (e) {
-                let target = e.target.value;
-
-                dispatchScheduleSortingInfoState({
-                    type: 'SET_DATA',
-                    payload: {
-                        completed: target
-                    }
-                });
-            },
-            changeViewData: function () {
-                let newData = [...schedules];
-
-                if (scheduleSortingInfoState?.categoryId !== 'total') {
-                    newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
-                }
-
-                if(scheduleSortingInfoState?.completed !== 'total') {
-                    newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
-                }
-
-                setSchedules(newData)
+        dispatchScheduleSortingInfoState({
+            type: 'SET_DATA',
+            payload: {
+                [e.target.name]: value
             }
+        });
+    }
+
+    const handleChangeSortingView = () => {
+        let newData = [...schedules];
+
+        if (scheduleSortingInfoState?.categoryId !== 'total') {
+            newData = newData?.filter(r => r.categoryId === scheduleSortingInfoState?.categoryId);
         }
+
+        if (scheduleSortingInfoState?.completed !== 'total') {
+            newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
+        }
+
+        setSchedules(newData)
     }
 
     const convertCategoryName = (categoryId) => {
@@ -175,9 +158,10 @@ export default function MonthlySchedulerModalMain(props) {
                 schedules={schedules}
 
                 onCloseModal={onCloseModal}
-                viewSelectControl={viewSelectControl}
+                handleChangeSortingValue={handleChangeSortingValue}
+                handleChangeSortingView={handleChangeSortingView}
                 convertCategoryName={convertCategoryName}
-                scheduleStatusControl={scheduleStatusControl}
+                isCompleted={isCompleted}
             />
         </>
     )

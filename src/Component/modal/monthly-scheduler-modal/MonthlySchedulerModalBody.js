@@ -38,7 +38,7 @@ export default function MonthlySchedulerModalBody(props) {
             </ProgressBox>
             <BodyWrapper>
                 <DataGroup className="fixed-header">
-                    <CategorySelect onChange={(e) => props.viewSelectControl().onChangeCategoryValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
+                    <CategorySelect onChange={(e) => props.handleChangeSortingValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
                         <option value='total'>카테고리</option>
                         {props.categories?.map((r, index) => {
                             return (
@@ -46,7 +46,7 @@ export default function MonthlySchedulerModalBody(props) {
                             )
                         })}
                     </CategorySelect>
-                    <CategorySelect onChange={(e) => props.viewSelectControl().onChangeCompletedValue(e)} value={props.scheduleSortingInfoState?.completed}>
+                    <CategorySelect onChange={(e) => props.handleChangeSortingValue(e)} value={props.scheduleSortingInfoState?.completed}>
                         <option value='total'>완료여부</option>
                         <option value={true}>완료</option>
                         <option value={false}>미완료</option>
@@ -60,7 +60,7 @@ export default function MonthlySchedulerModalBody(props) {
                         <DataGroup key={`scheduler_info_idx` + index}>
                             <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>
                             <DataText>
-                                <Checkbox checked={props.scheduleStatusControl().isCompleted(r.id)}/>
+                                <Checkbox checked={props.isCompleted(r.id)}/>
                             </DataText>
                             <DataText>{r.content}</DataText>
                             <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
