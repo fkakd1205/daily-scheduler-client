@@ -6,11 +6,11 @@ import { getEndDate, getStartDate } from "../../../handler/dateHandler";
 
 export default function MonthlySchedulerModalMain(props) {
     const [scheduleSortingInfoState, dispatchScheduleSortingInfoState] = useReducer(scheduleSortingInfoReducer, initialScheduleSortingInfo);
-    const [completedScheduleInfoList, setCompletedScheduleInfoList] = useState([]);
     const [progressionRate, setProgressionRate] = useState(0);
 
     const [categories, setCategories] = useState(null);
     const [schedules, setSchedules] = useState(null);
+    const [sortedchedules, setSortedSchedules] = useState(null);
 
     useEffect(() => {
         async function getInitData() {
@@ -41,43 +41,24 @@ export default function MonthlySchedulerModalMain(props) {
         let startDate = getStartDate(firstDate);
         // 다음달 1일의 -1 index
         let endDate = getEndDate(lastDate);
-
-
         getDailySchedule(startDate, endDate)
     }, [props.searchYear, props.searchMonth, props.totalDate])
 
     useEffect(() => {
-        function getCompletedSchedule() {            
-            let completedIdList = schedules.filter(r => r.completed).map(r => r.id);
-            if(completedIdList) {
-                setCompletedScheduleInfoList(completedIdList);
-            }
-
-            // 진행률
-            let rate = 0;
-            if(schedules.length !== 0){
-                rate = Math.round((completedIdList.length / schedules.length) * 100);
-            }
-            setProgressionRate(rate);
-        }
-
-        if(!schedules) {
+        if(!sortedchedules) {
             return;
         }
 
-        getCompletedSchedule();
-    }, [schedules]);
+        handleSetProgressionRate();
+    }, [sortedchedules]);
 
     // 선택된 카테고리로 스케쥴 조회
     useEffect(() => {
-        function changeSort() {
-            if(!(scheduleSortingInfoState && schedules)) {
-                return;
-            }
-
-            handleChangeSortingView();
+        if(!(scheduleSortingInfoState && schedules)) {
+            return;
         }
-        changeSort();
+
+        handleChangeSortingView();
     }, [scheduleSortingInfoState, schedules])
 
     const onCloseModal = (e) => {
@@ -85,8 +66,20 @@ export default function MonthlySchedulerModalMain(props) {
         props.onClose();
     }
 
-    const isCompleted = (scheduleId) => {
-        return completedScheduleInfoList?.includes(scheduleId);
+    const handleSetProgressionRate = () => {
+        let completedIdList = []
+        sortedchedules.forEach(r => {
+            if (r.completed) {
+                completedIdList.push(r.id)
+            }
+        });
+
+        // 진행률
+        let rate = 0;
+        if (sortedchedules.length !== 0) {
+            rate = Math.round((completedIdList.length / sortedchedules.length) * 100);
+        }
+        setProgressionRate(rate);
     }
 
     const handleChangeSortingValue = (e) => {
@@ -111,7 +104,7 @@ export default function MonthlySchedulerModalMain(props) {
             newData = newData?.filter(r => JSON.parse(scheduleSortingInfoState.completed) === r.completed);
         }
 
-        setSchedules(newData)
+        setSortedSchedules(newData)
     }
 
     const convertCategoryName = (categoryId) => {
@@ -155,13 +148,12 @@ export default function MonthlySchedulerModalMain(props) {
 
                 searchMonth={props.searchMonth}
                 categories={categories}
-                schedules={schedules}
+                schedules={sortedchedules}
 
                 onCloseModal={onCloseModal}
                 handleChangeSortingValue={handleChangeSortingValue}
                 handleChangeSortingView={handleChangeSortingView}
                 convertCategoryName={convertCategoryName}
-                isCompleted={isCompleted}
             />
         </>
     )

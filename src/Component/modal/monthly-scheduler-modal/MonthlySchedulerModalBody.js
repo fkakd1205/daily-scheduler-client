@@ -8,7 +8,9 @@ import { makeStyles } from "@material-ui/core/styles";
 
 const useStyles = makeStyles((theme) => ({
     progressBar: {
-        height: 12,
+        [`&.${linearProgressClasses.root}`]: {
+            height: 8
+        },
         [`&.${linearProgressClasses.colorPrimary}`]: {
           backgroundColor: theme.palette.grey[theme.palette.mode === 'light' ? 800 : 200],
         },
@@ -38,7 +40,7 @@ export default function MonthlySchedulerModalBody(props) {
             </ProgressBox>
             <BodyWrapper>
                 <DataGroup className="fixed-header">
-                    <CategorySelect onChange={(e) => props.handleChangeSortingValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
+                    <CategorySelect name='categoryId' onChange={(e) => props.handleChangeSortingValue(e)} value={props.scheduleSortingInfoState?.categoryId}>
                         <option value='total'>카테고리</option>
                         {props.categories?.map((r, index) => {
                             return (
@@ -46,7 +48,7 @@ export default function MonthlySchedulerModalBody(props) {
                             )
                         })}
                     </CategorySelect>
-                    <CategorySelect onChange={(e) => props.handleChangeSortingValue(e)} value={props.scheduleSortingInfoState?.completed}>
+                    <CategorySelect name='completed' onChange={(e) => props.handleChangeSortingValue(e)} value={props.scheduleSortingInfoState?.completed}>
                         <option value='total'>완료여부</option>
                         <option value={true}>완료</option>
                         <option value={false}>미완료</option>
@@ -60,7 +62,7 @@ export default function MonthlySchedulerModalBody(props) {
                         <DataGroup key={`scheduler_info_idx` + index}>
                             <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>
                             <DataText>
-                                <Checkbox checked={props.isCompleted(r.id)}/>
+                                <Checkbox checked={r.completed} disabled />
                             </DataText>
                             <DataText>{r.content}</DataText>
                             <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>

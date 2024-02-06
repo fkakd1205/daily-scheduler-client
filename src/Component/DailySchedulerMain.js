@@ -141,54 +141,56 @@ export default function DailySchedulerMain() {
 
     return (
         <>
-            <div className="schedule-body">
-                <DailySchedulerBody
-                    searchYear={searchYear}
-                    searchMonth={searchMonth}
-                    totalDate={totalDate}
+            <DailySchedulerBody
+                searchYear={searchYear}
+                searchMonth={searchMonth}
+                totalDate={totalDate}
 
-                    handleDailyModalOpen={handleDailyModalOpen}
-                    isTodayDate={isTodayDate}
-                    isThisMonthDate={isThisMonthDate}
-                    handleMonthlyModalOpen={handleMonthlyModalOpen}
+                handleDailyModalOpen={handleDailyModalOpen}
+                isTodayDate={isTodayDate}
+                isThisMonthDate={isThisMonthDate}
+                handleMonthlyModalOpen={handleMonthlyModalOpen}
 
-                    handleChangePrevMonth={handleChangePrevMonth}
-                    handleChangeNextMonth={handleChangeNextMonth}
-                />
-            </div>
+                handleChangePrevMonth={handleChangePrevMonth}
+                handleChangeNextMonth={handleChangeNextMonth}
+            />
 
             {/* 일간 스케쥴러 모달창 */}
-            <CommonModal
-                open={dailySchedulerModalOpen}
-                onClose={() => handleDailySchedulerModalClose()}
-                maxWidth={'md'}
-                fullWidth={true}
-            >
-                <DailySchedulerModalMain
-                    today={today}
-                    searchYear={searchYear}
-                    searchMonth={searchMonth}
-                    selectedDate={selectedDate}
-
+            {dailySchedulerModalOpen &&
+                < CommonModal
+                    open={dailySchedulerModalOpen}
                     onClose={() => handleDailySchedulerModalClose()}
-                />
-            </CommonModal>
+                    maxWidth={'md'}
+                    fullWidth={true}
+                >
+                    <DailySchedulerModalMain
+                        today={today}
+                        searchYear={searchYear}
+                        searchMonth={searchMonth}
+                        selectedDate={selectedDate}
+
+                        onClose={() => handleDailySchedulerModalClose()}
+                    />
+                </CommonModal >
+            }
 
             {/* 월간 스케쥴러 모달창 */}
-            <CommonModal
-                open={monthlySchedulerModalOpen}
-                onClose={handleMonthlySchedulerModalClose}
-                maxWidth={'md'}
-                fullWidth={true}
-            >
-                <MonthlySchedulerModalMain
-                    searchYear={searchYear}
-                    searchMonth={searchMonth}
-                    totalDate={totalDate}
-
+            {monthlySchedulerModalOpen &&
+                <CommonModal
+                    open={monthlySchedulerModalOpen}
                     onClose={handleMonthlySchedulerModalClose}
-                />
-            </CommonModal>
+                    maxWidth={'md'}
+                    fullWidth={true}
+                >
+                    <MonthlySchedulerModalMain
+                        searchYear={searchYear}
+                        searchMonth={searchMonth}
+                        totalDate={totalDate}
+
+                        onClose={handleMonthlySchedulerModalClose}
+                    />
+                </CommonModal>
+            }
         </>
     )
 }

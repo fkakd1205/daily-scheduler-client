@@ -26,12 +26,12 @@ export default function DailySchedulerModalBody(props){
                             <ScheduleCategoryBox>
                                 {props.categories?.map((r, index) => {
                                     return (
-                                        <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={props.scheduleInputValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => props.onChangeScheduleInfoValue(e)} value={r.id}>{r.name}</CategoryBtn>
+                                        <CategoryBtn key={`scheduler_category_idx` + index} name="categoryId" className={props.scheduleInputValueState?.categoryId === r.id ? `schedule-category-btn-active` : ''} onClick={(e) => props.onChangeScheduleInputValue(e)} value={r.id}>{r.name}</CategoryBtn>
                                     )
                                 })}
                             </ScheduleCategoryBox>
                             <ScheduleContentBox>
-                                <ContentInput type="text" name="content" onChange={(e) => props.onChangeScheduleInfoValue(e)} value={props.scheduleInputValueState?.content || ''} required></ContentInput>
+                                <ContentInput type="text" name="content" onChange={(e) => props.onChangeScheduleInputValue(e)} value={props.scheduleInputValueState?.content || ''} required></ContentInput>
                                 <ContentAddBtn type="submit"><AddCircleIcon fontSize="large" /></ContentAddBtn>
                             </ScheduleContentBox>
                         </CreateBox>
@@ -70,7 +70,7 @@ export default function DailySchedulerModalBody(props){
                                 <DataText>완료일</DataText>
                                 <DataText>삭제</DataText>
                             </DataGroupLi>
-                            {props.scheduleEditValueState?.map((r, index) => {
+                            {props.updatedScheduleList?.map((r, index) => {
                                 return (
                                     <DataGroupLi key={`scheduler_info_idx` + index}>
                                         <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>

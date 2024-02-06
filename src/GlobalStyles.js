@@ -6,17 +6,18 @@ const GlobalStyles = createGlobalStyle`
 
     body {
         position: relative;
-        padding-bottom: 100%; // 1:1
-        overflow: hidden;
+        width: 100%;
+        height: 100%;
 
-        .schedule-body{
+        .scheduler-body {
+            height: 100vh;
             background-image: url(/assets/background.svg);
             background-size: 100%;
             position: absolute;
             object-fit: cover;
             width: 100%;
-            height: 100%;
             border:1px solid #f1f1f1;
+            overflow: auto;
         }
     }
 `;

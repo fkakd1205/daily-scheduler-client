@@ -1,29 +1,43 @@
 import styled from 'styled-components';
 
 export const Container = styled.div`
-    padding: 2% 5%;
+    padding-bottom: 100px;
+`;
+
+export const Wrapper = styled.div`
+    padding: 40px 60px;
+
+    @media screen and (max-width: 992px){
+        padding: 20px 30px;
+    }
 `;
 
 export const CalendarHead = styled.div`
-    display: grid;
-    grid-template-columns: repeat(3, 25% 50% 25%);
+    display: flex;
     justify-content: space-between;
-    justify-items: center;
     font-weight: 600;
     font-size: 1.4rem;
-    padding: 5px;
-    height: 4vw;
-    align-items: center;
+    margin-bottom: 20px;
+    
+    .button-box {
+        display: flex;
+        
+        @media screen and (max-width: 992px){
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+        }
+    }
 
     @media screen and (max-width: 992px){
-        grid-template-columns: repeat(3, 1fr);
-        font-size: 1.2rem;
-        height: auto;
+        /* font-size: 1rem; */
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
     }
 `;
 
 export const CalendarFooter = styled.div`
-    padding: 10px;
 
     button {
         background-color: #4f87fe;
@@ -78,6 +92,12 @@ export const DateBody = styled.div`
     column-gap: 10px;
     row-gap: 10px;
     justify-items: stretch;
+
+    @media screen and (max-width: 992px) {
+        display: flex;
+        flex-direction: column;
+        padding: 10px 0;
+    }
 `;
 
 export const CalendarBody = styled.div`
@@ -85,6 +105,7 @@ export const CalendarBody = styled.div`
     box-shadow: 1px 1px 15px #a9b3d599;
     padding: 20px;
     border-radius: 15px;
+    margin-bottom: 20px;
 `;
 
 export const DateItem = styled.div`
