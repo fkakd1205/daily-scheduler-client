@@ -44,8 +44,15 @@ const DailySchedulerBody = (props) => {
                 </CalendarBody>
 
                 <CalendarFooter>
-                    <button onClick={(e) => props.handleMonthlyModalOpen(e)}>
-                        월별 진행률
+                    <button className='button-box' onClick={(e) => props.handleMonthlyModalOpen(e)}>
+                        <div>
+                            월별 진행률
+                        </div>
+                        <div>
+                            <img
+                                src={'/assets/icons/calendar_month_ffffff.svg'}
+                            />
+                        </div>
                     </button>
                 </CalendarFooter>
             </Wrapper>

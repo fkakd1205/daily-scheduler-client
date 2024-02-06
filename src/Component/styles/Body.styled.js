@@ -30,7 +30,6 @@ export const CalendarHead = styled.div`
     }
 
     @media screen and (max-width: 992px){
-        /* font-size: 1rem; */
         flex-direction: column;
         align-items: center;
         gap: 10px;
@@ -38,6 +37,16 @@ export const CalendarHead = styled.div`
 `;
 
 export const CalendarFooter = styled.div`
+    .button-box {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        transition: 0.15s all;
+
+        &:hover {
+            transform: scale(1.05);
+        }
+    }
 
     button {
         background-color: #4f87fe;
