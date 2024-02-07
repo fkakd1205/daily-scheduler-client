@@ -55,7 +55,13 @@ export const DataGroup = styled.div`
 `;
 
 export const DataText = styled.div`
-    .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-disabled {
+
+    &.content {
+        width: 100%;
+        text-align: left;
+    }
+
+    &.check-box .css-12wnr2w-MuiButtonBase-root-MuiCheckbox-root.Mui-disabled {
         color: #8f979e;
     }
 `;

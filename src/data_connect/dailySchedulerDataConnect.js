@@ -29,7 +29,15 @@ const dailySchedulerDataConnect = () => {
         updateScheduleList: async function (data) {
             return await axios.put(`${API_SERVER_ADDRESS}/api/v1/schedules/batch`, data, {
             });
-        }
+        },
+        searchScheduleSummaryByDate: async function (startDate, endDate) {
+            return await axios.get(`${API_SERVER_ADDRESS}/api/v1/schedules/summary`, {
+                params : {
+                    startDate : startDate,
+                    endDate: endDate
+                }
+            });
+        },
     }
 }
 

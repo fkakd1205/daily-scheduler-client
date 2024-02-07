@@ -4,6 +4,8 @@ import CommonModal from "../modal/CommonModal";
 import DailySchedulerBody from "./DailySchedulerBody";
 import DailySchedulerModalMain from "./modal/daily-scheduler-modal/DailySchedulerModalMain";
 import MonthlySchedulerModalMain from "./modal/monthly-scheduler-modal/MonthlySchedulerModalMain";
+import { getEndDate, getStartDate } from "../handler/dateHandler";
+import { dailySchedulerDataConnect } from "../data_connect/dailySchedulerDataConnect";
 
 const JANUARY = 1;
 const DECEMBER = 12;
@@ -19,6 +21,8 @@ export default function DailySchedulerMain() {
     const [dailySchedulerModalOpen, setDailySchedulerModalOpen] = useState(false);
     const [monthlySchedulerModalOpen, setMonthlySchedulerModalOpen] = useState(false);
 
+    const [scheduleSummaries, setScheduleSummaries] = useState(null);
+
     useEffect(() => {
         if(today) {
             return;
@@ -32,10 +36,25 @@ export default function DailySchedulerMain() {
 
     useEffect(() => {
         if(!searchMonth) {
-            return
+            return;
         }
 
         handleChangeSchedulerDate()
+    }, [searchMonth])
+
+    useEffect(() => {
+        async function getMonthlySummary() {
+            let startDate = getStartDate(new Date(searchYear, searchMonth-1, 1))
+            let endDate = getEndDate(new Date(searchYear, searchMonth, 0))
+
+            await __dataConnectControl().searchScheduleSummary(startDate, endDate)
+        }
+
+        if(!searchMonth) {
+            return;
+        }
+    
+        getMonthlySummary();    
     }, [searchMonth])
 
     const handleDailySchedulerModalOpen = () => {
@@ -139,12 +158,30 @@ export default function DailySchedulerMain() {
         handleMonthlySchedulerModalOpen(true);
     }
 
+    const __dataConnectControl = () => {
+        return {
+            searchScheduleSummary: async function (startDate, endDate) {
+                await dailySchedulerDataConnect().searchScheduleSummaryByDate(startDate, endDate)
+                    .then(res => {
+                        if (res.status === 200 && res.data.message === "success") {
+                            setScheduleSummaries(res.data.data)
+                        }
+                    })
+                    .catch(err => {
+                        let res = err.response;
+                        alert(res?.memo);
+                    })
+            }
+        }
+    }
+
     return (
         <>
             <DailySchedulerBody
                 searchYear={searchYear}
                 searchMonth={searchMonth}
                 totalDate={totalDate}
+                scheduleSummaries={scheduleSummaries}
 
                 handleDailyModalOpen={handleDailyModalOpen}
                 isTodayDate={isTodayDate}

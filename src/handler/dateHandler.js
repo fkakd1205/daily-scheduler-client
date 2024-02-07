@@ -26,9 +26,15 @@ function getEndDate(date) {
     return dateToYYYYMMDDhhmmss(endDate);
 }
 
+function getDate(date) {
+    var d = new Date(date);
+    return d.getDate();
+}
+
 export {
     dateToYYYYMMDDhhmmss,
     dateToYYYYMMDD,
     getStartDate,
-    getEndDate
+    getEndDate,
+    getDate
 }

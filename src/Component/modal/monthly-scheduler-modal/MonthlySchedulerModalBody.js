@@ -61,10 +61,10 @@ export default function MonthlySchedulerModalBody(props) {
                     return (
                         <DataGroup key={`scheduler_info_idx` + index}>
                             <DataText name="categoryId">{props.convertCategoryName(r.categoryId)}</DataText>
-                            <DataText>
+                            <DataText className='check-box'>
                                 <Checkbox checked={r.completed} disabled />
                             </DataText>
-                            <DataText>{r.content}</DataText>
+                            <DataText className='content'>{r.content}</DataText>
                             <DataText>{dateToYYYYMMDD(r.createdAt)}</DataText>
                             <DataText>{r.completedAt ? dateToYYYYMMDD(r.completedAt) : ''}</DataText>
                         </DataGroup>
