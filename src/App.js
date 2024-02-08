@@ -1,4 +1,4 @@
-import GlobalStyles from './GlobalStyles';
+import GlobalStyles from './style/global/GlobalStyles';
 import React from "react";
 import { BrowserRouter, Route, Routes } from 'react-router-dom';
 import { ThemeProvider } from "@material-ui/core/styles";

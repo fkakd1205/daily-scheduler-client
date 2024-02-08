@@ -1,0 +1,6 @@
+@font-face {
+    font-family: 'Suite';
+    src: url('/public/assets/fonts/suite/SUITE-Variable.woff2');
+    font-variation-settings: 'wght' normal;
+    font-style: normal;
+}

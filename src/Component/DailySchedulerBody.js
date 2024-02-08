@@ -12,9 +12,13 @@ const DailySchedulerBody = (props) => {
         <Container className='scheduler-body'>
             <Wrapper>
                 <CalendarHead>
-                    <span>{props.searchYear} Daily Scheduler</span>
-                    <span>{props.searchMonth} 월</span>
-                    <div className='button-box'>
+                    <div style={{ minWidth: 300 }}>
+                        <span>{props.searchYear} Daily Scheduler</span>
+                    </div>
+                    <div style={{ flexGrow: 1, textAlign: 'center' }}>
+                        <span>{props.searchMonth} 월</span>
+                    </div>
+                    <div className='button-box' style={{ minWidth: 300 }}>
                         <MonthControlBtn onClick={(e) => props.handleChangePrevMonth(e)}><ArrowBackIcon /></MonthControlBtn>
                         <MonthControlBtn onClick={(e) => props.handleChangeNextMonth(e)}><ArrowForwardIcon /></MonthControlBtn>
                     </div>

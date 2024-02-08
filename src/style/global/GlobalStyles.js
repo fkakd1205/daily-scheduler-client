@@ -1,5 +1,6 @@
 import { createGlobalStyle } from 'styled-components';
 import reset from 'styled-reset';
+import '../font/Suite.css'
 
 const GlobalStyles = createGlobalStyle`
     ${reset};
@@ -19,6 +20,10 @@ const GlobalStyles = createGlobalStyle`
             border:1px solid #f1f1f1;
             overflow: auto;
         }
+    }
+
+    body * {
+        font-family: 'Suite';
     }
 `;
 

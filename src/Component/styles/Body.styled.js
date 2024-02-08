@@ -14,6 +14,7 @@ export const Wrapper = styled.div`
 
 export const CalendarHead = styled.div`
     display: flex;
+    align-items: flex-end;
     justify-content: space-between;
     font-weight: 600;
     font-size: 1.4rem;
@@ -21,6 +22,7 @@ export const CalendarHead = styled.div`
     
     .button-box {
         display: flex;
+        justify-content: end;
         
         @media screen and (max-width: 992px){
             width: 100%;
