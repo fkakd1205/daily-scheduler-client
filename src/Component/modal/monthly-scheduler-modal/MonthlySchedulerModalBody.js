@@ -23,6 +23,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function MonthlySchedulerModalBody(props) {
     const classes = useStyles();
+    let completed = props.schedules?.filter(r => r.completed);
 
     return (
         <Container>
@@ -35,7 +36,10 @@ export default function MonthlySchedulerModalBody(props) {
                     </div>
             </HeaderContainer>
             <ProgressBox>
-                <span>{props.progressionRate ?? 0}%</span>
+                <div className='progress-text'>
+                    <span style={{ color: '#2794ff', fontWeight: 700 }}>{props.progressionRate ?? 0}%</span>
+                    <span style={{ color: '#8c8c8c', fontSize: '12px' }}>{`( ${completed?.length} / ${props.schedules?.length} )`}</span>
+                </div>
                 <LinearProgress className={classes.progressBar} variant="determinate" value={props.progressionRate} />
             </ProgressBox>
             <BodyWrapper>

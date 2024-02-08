@@ -36,7 +36,8 @@ export const CalendarHead = styled.div`
     }
 `;
 
-export const CalendarFooter = styled.div`
+export const MonthlyCalendar = styled.div`
+
     .button-box {
         display: flex;
         align-items: center;
@@ -118,30 +119,57 @@ export const CalendarBody = styled.div`
 `;
 
 export const DateItem = styled.div`
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+
     padding: 10px;
     background-color: white;
     box-shadow: 1px 1px 15px #a9b3d599;
     transition: 0.3s;
-    border-radius: 3px;
-    min-height: 10vh;
-    max-height: 10vh;
+    border-radius: 10px;
+    min-height: 90px;
+    max-height: 90px;
+    overflow: hidden;
 
     &.other-month-date {
         background-color: #e4e4e4aa;
     }
 
     &.today {
-        font-weight: 700;
-        background-color: #b0e0ff;
         box-shadow: 2px 2px 15px #b0e0ff;
+        background-color: #b0e0ff;
 
+        .date {
+            font-weight: 700;
+        }
+    }
+
+    .preview-text {
+        display: flex;
+        align-items: center;
+        justify-content: end;
+        gap: 5px;
+        font-size: 14px;
+    }
+
+    .image-box {
+        width: 20px;
+    }
+
+    .count-value {
+        width: 15px;
+        text-align: center;
     }
 
     :hover{
-        background-color: #8fd3ff;
-        font-weight: 700;
-        color: white;
         cursor: pointer;
+        background-color: #8fd3ff;
+        
+        .date {
+            font-weight: 700;
+            color: white;
+        }
     }
 
 

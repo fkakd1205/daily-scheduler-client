@@ -44,10 +44,7 @@ export default function DailySchedulerMain() {
 
     useEffect(() => {
         async function getMonthlySummary() {
-            let startDate = getStartDate(new Date(searchYear, searchMonth-1, 1))
-            let endDate = getEndDate(new Date(searchYear, searchMonth, 0))
-
-            await __dataConnectControl().searchScheduleSummary(startDate, endDate)
+            await __dataConnectControl().searchScheduleSummary()
         }
 
         if(!searchMonth) {
@@ -160,7 +157,10 @@ export default function DailySchedulerMain() {
 
     const __dataConnectControl = () => {
         return {
-            searchScheduleSummary: async function (startDate, endDate) {
+            searchScheduleSummary: async function () {
+                let startDate = getStartDate(new Date(searchYear, searchMonth-1, 1))
+                let endDate = getEndDate(new Date(searchYear, searchMonth, 0))
+
                 await dailySchedulerDataConnect().searchScheduleSummaryByDate(startDate, endDate)
                     .then(res => {
                         if (res.status === 200 && res.data.message === "success") {
@@ -196,7 +196,7 @@ export default function DailySchedulerMain() {
             {dailySchedulerModalOpen &&
                 < CommonModal
                     open={dailySchedulerModalOpen}
-                    onClose={() => handleDailySchedulerModalClose()}
+                    onClose={handleDailySchedulerModalClose}
                     maxWidth={'md'}
                     fullWidth={true}
                 >
@@ -206,7 +206,8 @@ export default function DailySchedulerMain() {
                         searchMonth={searchMonth}
                         selectedDate={selectedDate}
 
-                        onClose={() => handleDailySchedulerModalClose()}
+                        onClose={handleDailySchedulerModalClose}
+                        __searchScheduleSummary={__dataConnectControl().searchScheduleSummary}
                     />
                 </CommonModal >
             }

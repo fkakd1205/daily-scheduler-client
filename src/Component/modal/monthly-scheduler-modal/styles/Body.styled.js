@@ -78,4 +78,10 @@ export const CategorySelect = styled.select`
 export const ProgressBox = styled.div`
     padding: 10px 20px;
     background-color: white;
+    
+    .progress-text {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
 `;

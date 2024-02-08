@@ -110,6 +110,7 @@ export default function DailySchedulerModalMain(props) {
 
         await __dataConnectControl().createSchdule(scheduleInputValueState);
         await __dataConnectControl().searchSchedules(startDate, endDate);
+        await props.__searchScheduleSummary();
 
         dispatchScheduleInputValueState({
             type: 'CLEAR'
@@ -150,6 +151,7 @@ export default function DailySchedulerModalMain(props) {
 
         await __dataConnectControl().updateCompletedSchedule(data);
         await __dataConnectControl().searchSchedules(startDate, endDate);
+        await props.__searchScheduleSummary();
     }
 
     const handleChangeScheduleEditValue = (e, scheduleId) => {
@@ -202,6 +204,7 @@ export default function DailySchedulerModalMain(props) {
 
             await __dataConnectControl().deleteSchedule(sheduleId);
             await __dataConnectControl().searchSchedules(startDate, endDate);
+            await props.__searchScheduleSummary();
         }
     }
 
