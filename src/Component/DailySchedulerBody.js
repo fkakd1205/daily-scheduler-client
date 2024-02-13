@@ -34,8 +34,10 @@ const DailySchedulerBody = (props) => {
                     </DayInfo>
                     <DateBody>
                         {props.totalDate?.map((item, index) => {
-                            let isThisMonth = props.isThisMonthDate(index)
-                            let summary = isThisMonth && props.scheduleSummaries?.find(r => getDate(r.datetime) === item)
+                            let isThisMonth = props.isThisMonthDate(index);
+                            let summary = isThisMonth && props.scheduleSummaries?.find(r => getDate(r.datetime) === item);
+                            let weekIdx = isThisMonth && props.getThisMonthWeekday(item);
+                            let dayName = WEEKDAY[weekIdx];
 
                             return (
                                 <DateItem key={'date_item_idx' + index}
@@ -43,7 +45,8 @@ const DailySchedulerBody = (props) => {
                                     className={`${(isThisMonth && props.isTodayDate(item)) ? 'today' : ''} ${isThisMonth ? '' : 'other-month-date'}`}
                                 >
                                     <div className='date'>
-                                        <span>{item}</span>
+                                        <span>{item} </span>
+                                        {dayName && <span style={{ color: '#8c95ae' }}>({dayName})</span>}
                                     </div>
                                     {summary &&
                                         <div>

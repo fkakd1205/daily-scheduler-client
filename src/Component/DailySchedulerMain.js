@@ -155,6 +155,11 @@ export default function DailySchedulerMain() {
         handleMonthlySchedulerModalOpen(true);
     }
 
+    const getThisMonthWeekday = (item) => {
+        let date = new Date(searchYear, searchMonth-1, item)
+        return date.getDay();
+    }
+
     const __dataConnectControl = () => {
         return {
             searchScheduleSummary: async function () {
@@ -187,6 +192,7 @@ export default function DailySchedulerMain() {
                 isTodayDate={isTodayDate}
                 isThisMonthDate={isThisMonthDate}
                 handleMonthlyModalOpen={handleMonthlyModalOpen}
+                getThisMonthWeekday={getThisMonthWeekday}
 
                 handleChangePrevMonth={handleChangePrevMonth}
                 handleChangeNextMonth={handleChangeNextMonth}

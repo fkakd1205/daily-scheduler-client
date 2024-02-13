@@ -96,6 +96,10 @@ export const DayInfo = styled.div`
     padding-bottom: 10px;
     border-bottom: 2px solid #7c7c7c;
     margin-bottom: 1%;
+
+    @media screen and (max-width: 992px) {
+        display: none;
+    }
 `;
 
 export const DateBody = styled.div`
@@ -136,6 +140,10 @@ export const DateItem = styled.div`
 
     &.other-month-date {
         background-color: #e4e4e4aa;
+
+        @media screen and (max-width: 992px){
+            display: none;
+        }
     }
 
     &.today {
@@ -153,6 +161,10 @@ export const DateItem = styled.div`
         justify-content: end;
         gap: 5px;
         font-size: 14px;
+
+        @media screen and (max-width: 992px){
+            font-size: 12px;
+        }
     }
 
     .image-box {
@@ -176,13 +188,10 @@ export const DateItem = styled.div`
 
 
     @media screen and (max-width: 992px){
+        flex-direction: row;
+        align-items: center;
         font-size: 12px;
-        min-height: 6vh;
-        max-height: 6vh;
-    }
-    
-    @media screen and (max-width: 576px){
-        min-height: auto;
-        min-height: auto;
+        min-height: 30px;
+        max-height: 30px;
     }
 `;
